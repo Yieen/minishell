@@ -5,74 +5,149 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <readline/readline.h>
 #include "../libft/include/libft.h"
 
 extern char **environ;
 
-typedef struct s_data
+typedef struct s_program
 {
-	char *p1;
-	char *p2;
-	char **argv1;
-	char **argv2;
-}	t_data;
+	pid_t	pid;
+	char *pathname;
+	char **argv;
+	int	inputfile;
+	int outputfile;
+}	t_program;
 
-void	execute(t_data *data)
+void	execute(t_program *programs, int num)
 {
-	pid_t	pid1;
-	// pid_t	pid2;
-	// int		p[2];
+	int		fd[2][2];
+	int		i;
 
-	// pipe(p);
-	pid1 = fork();
-	if (pid1 == 0)
+	i = num;
+	while (i--)
 	{
-		int	file = open("test.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
-		if (file == -1)
+		if (i != 0)
 		{
-			printf("file\n");
+			pipe(fd[i % 2]);//can fail
+		}
+		programs[i].pid = fork();//can fail
+		if (programs[i].pid == 0)
+		{
+			if (i != 0)
+			{
+				dup2(fd[i % 2][0], STDIN_FILENO);//can fail
+				close(fd[i % 2][0]);
+				close(fd[i % 2][1]);
+			} 
+			if (i != num - 1)
+			{
+				dup2(fd[(i + 1) % 2][1], STDOUT_FILENO);//can fail
+				close(fd[(i + 1) % 2][0]);
+				close(fd[(i + 1) % 2][1]);
+			}
+			if (programs[i].outputfile != -1)
+			{
+				dup2(programs[i].outputfile, STDOUT_FILENO);//can fail
+				close(programs[i].outputfile);
+			}
+			if (programs[i].inputfile != -1)
+			{
+				dup2(programs[i].inputfile, STDIN_FILENO);//can fail
+				close(programs[i].inputfile);
+			}
+			execve(programs[i].pathname, programs[i].argv, environ);//can fail
 			exit(1);
 		}
-		dup2(file, STDOUT_FILENO);
-		close(file);
-		// dup2(p[1], STDOUT_FILENO);
-		// close(p[0]);
-		// close(p[1]);
-		execve(data->p1, data->argv1, environ);
-		printf("execve: %s\n", strerror(errno));
-		exit(1);
+		if (programs[i].outputfile != -1)
+		{
+			close(programs[i].outputfile);
+		}
+		if (programs[i].inputfile != -1)
+		{
+			close(programs[i].inputfile);
+		}
+		if (i != num - 1)
+		{
+			close(fd[(i + 1) % 2][0]);
+			close(fd[(i + 1) % 2][1]);
+		}
 	}
-	// pid2 = fork();
-	// if (pid2 == 0)
-	// {
-	// 	dup2(p[0], STDIN_FILENO);
-	// 	close(p[0]);
-	// 	close(p[1]);
-	// 	execve(data->p2, data->argv2, environ);
-	// 	printf("execve: %s\n", strerror(errno));
-	// 	exit(1);
-	// }
-	// close(p[0]);
-	// close(p[1]);
-	waitpid(pid1, NULL, 0);
-	printf("finished\n");
 }
 
-int	main(void)
+int	here_document(char *delimiter)
 {
-	t_data	data;
+	int	fd[2];
+	char	*line;
 
-	data.p1 = "/bin/ls";
-	data.argv1 = malloc(sizeof(*data.argv1) * 20);
-	data.argv1[0] = "/bin/ls";
-	data.argv1[1] = NULL;
-	data.argv1[2] = NULL;
-	data.p2 = "/usr/bin/grep";
-	data.argv2 = malloc(sizeof(*data.argv2) * 20);
-	data.argv2[0] = "/usr/bin/grep";
-	data.argv2[1] = "M";
-	data.argv2[2] = NULL;
-	execute(&data);
+	pipe(fd);
+	while (1)
+	{
+		line = readline("> ");
+		if (ft_strcmp(line, delimiter) == 0)
+		{
+			free(line);
+			break ;
+		}
+		ft_putstr_fd(line, fd[1]);
+		free(line);
+		ft_putchar_fd('\n', fd[1]);
+	}
+	close(fd[1]);
+	return (fd[0]);
+}
+
+int	main(int argc, char **argv)
+{
+	t_program	*programs = malloc(sizeof(*programs) * 4);
+	int			num = 4;
+
+
+	char *argv1[] = {"grep", "Make", NULL};
+
+	programs[0].pathname = "/usr/bin/grep";
+	programs[0].argv = argv1;
+	programs[0].outputfile = -1;
+	if (argc != 1)
+		programs[0].inputfile = here_document(argv[1]);
+	else
+		programs[0].inputfile = open("input.txt", O_RDONLY, S_IRUSR);
+	if (programs[0].inputfile == -1)
+	{
+		printf("error file open\n");
+		exit(1);
+	}
+
+
+	char *argv2[] = {"grep", "Make", NULL};
+
+	programs[1].pathname = "/usr/bin/grep";
+	programs[1].argv = argv2;
+	programs[1].outputfile = -1;
+	programs[1].inputfile = -1;
+
+
+	char *argv3[] = {"grep", "Make", NULL};
+
+	programs[2].pathname = "/usr/bin/grep";
+	programs[2].argv = argv3;
+	programs[2].outputfile = -1;
+	programs[2].inputfile = -1;
+
+
+	char *argv4[] = {"grep", "Make", NULL};
+
+	programs[3].pathname = "/usr/bin/grep";
+	programs[3].argv = argv4;
+	programs[3].outputfile = open("tmp.txt", O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	programs[3].inputfile = -1;
+
+
+	execute(programs, num);
+	for (int i = 0; i < num; i++)
+	{
+		waitpid(programs[i].pid, NULL, 0);
+	}
 }
 
 // int	ft_strncmp(const char *s1, const char *s2, size_t n)

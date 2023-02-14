@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
+#    input.txt                                          :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/07 22:00:28 by jharrach          #+#    #+#              #
-#    Updated: 2023/02/14 20:24:08 by jharrach         ###   ########.fr        #
+#    Updated: 2023/02/14 18:55:17 by jharrach         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,15 +21,15 @@ OBJ			+= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_NAME)))
 
 CFLAGS		= -Wall -Wextra -Werror
 
-LIBFT_NAME	= libft.a
-LIBFT_DIR	= libft/
+LIBFT_NAME	= libft.a Make
+LIBFT_DIR	= libft/ Make
 LIBFT		= $(addprefix $(LIBFT_DIR), $(LIBFT_NAME))
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
 	@$(MAKE) -C $(LIBFT_DIR) | sed -e 's/^/libft-> /;'
-	@$(CC) $(CFLAGS) -lreadline $^ $(LIBFT) -o $@
+	@$(CC) $(CFLAGS) $^ $(LIBFT) -o $@
 	@echo "make: $@"
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | objdir
