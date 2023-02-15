@@ -19,7 +19,7 @@ typedef struct s_program
 	int outputfile;
 }	t_program;
 
-void	execute(t_program *programs, int num)
+void	execute(t_program *programs, int num, char **env)
 {
 	int		fd[2][2];
 	int		i;
@@ -56,7 +56,10 @@ void	execute(t_program *programs, int num)
 				dup2(programs[i].inputfile, STDIN_FILENO);//can fail
 				close(programs[i].inputfile);
 			}
-			execve(programs[i].pathname, programs[i].argv, environ);//can fail
+			execve(programs[i].pathname, programs[i].argv, env);//can fail
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd(programs[i].argv[0], STDERR_FILENO);
+			ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
 			exit(1);
 		}
 		if (programs[i].outputfile != -1)
@@ -143,7 +146,7 @@ int	main(int argc, char **argv)
 	programs[3].inputfile = -1;
 
 
-	execute(programs, num);
+	execute(programs, num, environ);
 	for (int i = 0; i < num; i++)
 	{
 		waitpid(programs[i].pid, NULL, 0);

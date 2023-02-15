@@ -6,7 +6,7 @@
 #    By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/07 22:00:28 by jharrach          #+#    #+#              #
-#    Updated: 2023/02/14 20:24:08 by jharrach         ###   ########.fr        #
+#    Updated: 2023/02/15 18:49:38 by jharrach         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,11 +41,11 @@ objdir:
 clean:
 	@$(MAKE) clean -C $(LIBFT_DIR) | sed -e 's/^/libft-> /;'
 	@$(RM) -r $(OBJ_DIR)
-	@echo "make: clean"
+	@echo "make: $@"
 
 fclean: clean
 	@$(RM) $(NAME)
-	@echo "make: fclean"
+	@echo "make: $@"
 	@$(RM) $(LIBFT)
 
 re: fclean all
