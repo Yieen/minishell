@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/15 21:03:16 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/02/16 17:11:19 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void	read_prompt(t_shell *shell)
 	shell->prompt = malloc(sizeof(char) * 1000);	// TODO
 	// shell->prompt = "\"12\'7\'3\"45$1|78  a=1"; 
 	// shell->prompt = "/bin/echo 123 456 | /usr/bin/wc -l"; 
-		shell->prompt = "/bin/echo 1 2 3"; 
+		shell->prompt = "/Users/jharrach/Documents/minishell/combined/input.txt 1 2 | grep 1"; 
 } 
 
 int	is_sp_sim(char ch)
