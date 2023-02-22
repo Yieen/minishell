@@ -6,46 +6,11 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/16 17:11:19 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/02/22 17:32:54 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-//	new_begining % gcc -lreadline  *.c
-//	new_begining % gcc -I/goinfre/inovomli/.brew/opt/readline/include -lreadline  *.c
-
-
-int	ft_strlen(const char *s)
-{
-	int	len;
-
-	len = 0;
-	if (!s)
-		return (0);
-	while (s[len] != '\0')
-		len++;
-	return (len);
-}
-
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
-{
-	size_t	srcsize;
-	size_t	i;
-
-	srcsize = (size_t)ft_strlen(src);
-	i = 0;
-	if (dstsize != 0)
-	{
-		while ((src[i]) && (i < (dstsize - 1)))
-		{
-			dst[i] = src[i];
-			i++;
-		}
-		dst[i] = '\0';
-	}
-	return (srcsize);
-}
 
 char	*ft_substr(const char *s, unsigned int start, size_t len)
 {
@@ -92,7 +57,7 @@ void	read_prompt(t_shell *shell)
 	shell->prompt = malloc(sizeof(char) * 1000);	// TODO
 	// shell->prompt = "\"12\'7\'3\"45$1|78  a=1"; 
 	// shell->prompt = "/bin/echo 123 456 | /usr/bin/wc -l"; 
-		shell->prompt = "/Users/jharrach/Documents/minishell/combined/input.txt 1 2 | grep 1"; 
+		shell->prompt = "cd .."; 
 } 
 
 int	is_sp_sim(char ch)
@@ -346,10 +311,10 @@ int main(int argc, char **argv, char **envp)
 		j = 0;
 		i++;
 	}
-		// if (shell.pipe_cnts > 0)
+		if (shell.pipe_cnts > 0)
 			pipex(&shell);	// run pipes
-		// else 
-		// 	execute(shell);	//  exec 1 command / end shell	
+		else 
+			execute(&shell);	//  exec 1 command / end shell	
 	// printf("cmnd_cnt=%d\n", shell.cmnd_cnt);
 	return (0);
 }

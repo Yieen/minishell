@@ -10,18 +10,6 @@
 #include "../include/minishell.h"
 #include <errno.h>
 
-extern char **environ;
-extern int const	sys_nerr;
-
-typedef struct s_program
-{
-	pid_t	pid;
-	char *pathname;
-	char **argv;
-	int	inputfile;
-	int outputfile;
-}	t_program;
-
 char	*ft_getenv(char *name, char **env)
 {
 	int	i;
@@ -72,26 +60,10 @@ char	*search_pathname(char *name, char **env)
 	return (NULL);
 }
 
-void	ft_echo(char **argv)
-{
-	const int	n = argv[1] != NULL && argv[1][0] == '-' && argv[1][1] == 'n' && argv[1][2] == '\0' && ++argv;
-
-	while (*++argv)
-	{
-		if (*(argv + 1))
-			printf("%s ", *argv);
-		else
-			printf("%s", *argv);
-	}
-	if (!n)
-		printf("\n");
-	exit(0);
-}
-
 char	*get_pathname(char **argv, char **env)
 {
 	char const	buildin[][10] = {"echo", "pwd", "cd", "exit", "export", "unset", "env"};
-	void		(*ft_buildin[])(char **) = {ft_echo};
+	int			(*ft_buildin[])(char **) = {ft_echo, ft_pwd, ft_cd};
 	int			i;
 
 	if (ft_strchr(argv[0], '/') == 0)
@@ -100,7 +72,7 @@ char	*get_pathname(char **argv, char **env)
 		while (i < 7)
 		{
 			if (!ft_strcmp(buildin[i], argv[0]))
-				ft_buildin[i](argv);
+				exit(ft_buildin[i](argv));
 			i++;
 		}
 		return (search_pathname(argv[0], env));
@@ -128,32 +100,7 @@ void	pipex(t_shell *shell)
 	int		num = shell->pipe_cnts + 1;
 	pid_t	*pid = malloc(sizeof(*pid) * num);
 	char	*pathname;
-	// paths = NULL;
-	// i = 0;
-	// while (shell->env_param[i])
-	// {
-	// 	if (strcmp(shell->env_param[i], "PATH") == '=')
-	// 		paths = ft_split(&shell->env_param[i][5], ':');
-	// 	i++;
-	// }
-	// if (!paths)
-	// 	exit(1);
-	// char *pathname;
-	// char *tmp;
-	// while (*paths)
-	// {
-	// 	pathname = ft_strjoin(*paths++, "/");
-	// 	pathname = ft_strjoin(pathname, shell->parser_res[0][0]);
-	// 	if (access(pathname, F_OK) != 0)
-	// 		continue ;
-	// 	if (access(pathname, X_OK) != 0)
-	// 	{
-	// 		printf("minishell: %s: permission denied\n", pathname);
-	// 		return ;
-	// 	}
-	// 	printf("found: %s\n", pathname);
-	// 	break ;
-	// }
+
 	i = num;
 	while (i--)
 	{
@@ -161,7 +108,6 @@ void	pipex(t_shell *shell)
 		{
 			pipe(fd[i % 2]);//can fail
 		}
-		printf("call: %s\n", shell->parser_res[i][0]);
 		pid[i] = fork();//can fail
 		if (pid[i] == 0)
 		{
@@ -212,206 +158,3 @@ void	pipex(t_shell *shell)
 	for (int i = 0; i < shell->pipe_cnts + 1; i++)
 		waitpid(pid[i], NULL, 0);
 }
-
-// int	here_document(char *delimiter)
-// {
-// 	int	fd[2];
-// 	char	*line;
-
-// 	pipe(fd);
-// 	while (1)
-// 	{
-// 		line = readline("> ");
-// 		if (ft_strcmp(line, delimiter) == 0)
-// 		{
-// 			free(line);
-// 			break ;
-// 		}
-// 		ft_putstr_fd(line, fd[1]);
-// 		free(line);
-// 		ft_putchar_fd('\n', fd[1]);
-// 	}
-// 	close(fd[1]);
-// 	return (fd[0]);
-// }
-
-// int	main(int argc, char **argv)
-// {
-// 	t_program	*programs = malloc(sizeof(*programs) * 4);
-// 	int			num = 4;
-
-
-// 	char *argv1[] = {"grep", "Make", NULL};
-
-// 	programs[0].pathname = "/usr/bin/grep";
-// 	programs[0].argv = argv1;
-// 	programs[0].outputfile = -1;
-// 	if (argc != 1)
-// 		programs[0].inputfile = here_document(argv[1]);
-// 	else
-// 		programs[0].inputfile = open("input.txt", O_RDONLY, S_IRUSR);
-// 	if (programs[0].inputfile == -1)
-// 	{
-// 		printf("error file open\n");
-// 		exit(1);
-// 	}
-
-
-// 	char *argv2[] = {"grep", "Make", NULL};
-
-// 	programs[1].pathname = "/usr/bin/grep";
-// 	programs[1].argv = argv2;
-// 	programs[1].outputfile = -1;
-// 	programs[1].inputfile = -1;
-
-
-// 	char *argv3[] = {"grep", "Make", NULL};
-
-// 	programs[2].pathname = "/usr/bin/grep";
-// 	programs[2].argv = argv3;
-// 	programs[2].outputfile = -1;
-// 	programs[2].inputfile = -1;
-
-
-// 	char *argv4[] = {"grep", "Make", NULL};
-
-// 	programs[3].pathname = "/usr/bin/grep";
-// 	programs[3].argv = argv4;
-// 	programs[3].outputfile = open("tmp.txt", O_CREAT | O_TRUNC | O_WRONLY, 0644);
-// 	programs[3].inputfile = -1;
-
-
-// 	execute(programs, num, environ);
-// 	for (int i = 0; i < num; i++)
-// 	{
-// 		waitpid(programs[i].pid, NULL, 0);
-// 	}
-// }
-
-// int	ft_strncmp(const char *s1, const char *s2, size_t n)
-// {
-// 	size_t	i;
-
-// 	i = 0;
-// 	if (!n)
-// 		return (0);
-// 	while (s1[i] != '\0' && s1[i] == s2[i] && i < n - 1)
-// 		i++;
-// 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-// }
-
-// size_t	ft_strlen(const char *s)
-// {
-// 	size_t	len;
-
-// 	len = 0;
-// 	while (s[len])
-// 		len++;
-// 	return (len);
-// }
-
-// int	main(int argc, char **argv)
-// {
-// 	char const	*path = getenv("PATH");
-// 	char		**paths = ft_split(path, ':');
-// 	DIR			*dir;
-// 	struct dirent	*ent;
-// 	char		*file;
-
-// 	// (void)file;
-// 	// (void)argv;
-// 	if (argc == 1)
-// 		return (1);
-// 	int	i = 0;
-// 	while (argv[i])
-// 	{
-// 		if (strcmp(argv[i], "x") == 0)
-// 		{
-// 			printf("pipe\n");
-// 			return (0);
-// 		}
-// 		i++;
-// 	}
-// 	if (ft_strchr(argv[1], '/'))
-// 	{
-// 		execve(argv[1], &argv[1], environ);
-// 	}
-// 	else
-// 	{
-// 		while (*paths)
-// 		{
-// 			dir = opendir(*(paths));
-// 			ent = readdir(dir);
-// 			while (ent != NULL)
-// 			{
-// 				if ((ent->d_type == DT_LNK || ent->d_type == DT_REG) && ft_strcmp(argv[1], ent->d_name) == 0)
-// 				{
-// 					file = ft_strjoin(*paths, "/");
-// 					file = ft_strjoin(file, argv[1]);
-// 					execve(file, &argv[1], environ);
-// 				}
-// 				// printf("%s/%s\n", *paths, ent->d_name);
-// 				ent = readdir(dir);
-// 			}
-// 			paths++;
-// 		}
-// 	}
-	
-// 	printf("minishell: command not found: %s\n", argv[1]);
-// 	// DIR *dir = opendir("/bin");
-// 	// struct dirent *entity;
-
-// 	// entity = readdir(dir);
-// 	// while (entity != NULL)
-// 	// {
-// 	// 	if (entity->d_type == DT_LNK || entity->d_type == DT_REG)
-// 	// 		printf("%s\n", entity->d_name);
-// 	// 	entity = readdir(dir);
-// 	// }
-// }
-
-// int	main(int argc, char *argv[], char *envp[])
-// {
-// 	int fd[2];
-
-// 	pipe(fd);
-// 	int pid1 = fork();
-// 	char *args[] = {"ls", NULL, NULL};
-// 	if (pid1 == 0)
-// 	{
-// 		dup2(fd[1], STDOUT_FILENO);
-// 		close(fd[0]);
-// 		close(fd[1]);
-// 		execve("/bin/ls", args, NULL);
-// 		printf("error");
-// 		exit(1);
-// 	}
-// 	close(fd[1]);
-// 	int pid2 = fork();
-// 	args[0] = "./grep";
-// 	args[1] = argv[1];
-// 	if (pid2 == 0)
-// 	{
-// 		dup2(fd[0], STDIN_FILENO);
-// 		close(fd[0]);
-// 		execve("/usr/bin/grep", args, NULL);
-// 		printf("error");
-// 		exit(1);
-// 	}
-// 	close(fd[0]);
-// 	waitpid(pid1, NULL, 0);
-// }
-
-// int	main(int argc, char *argv[], char *envp[])
-// {
-// 	dprintf(STDERR_FILENO, "Hello WOrdl\n");
-// 	dprintf(STDOUT_FILENO, "IDK\n");
-// 	// char *args[] = {"ls", NULL};
-// 	// printf("i will become ls\n");
-// 	// int file = open("log.txt", O_CREAT | O_WRONLY, S_IWUSR | S_IRUSR);
-// 	// printf("file: %d\n", file);
-// 	// dup2(file, STDOUT_FILENO);
-// 	// close(file);
-// 	// execve("/bin/ls", argv, envp);
-// 	// printf("failure %s\n", strerror(errno));
-// }

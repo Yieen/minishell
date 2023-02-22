@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf_fd_p.c                                   :+:      :+:    :+:   */
+/*   ft_dprintf_p.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/28 16:56:08 by jharrach          #+#    #+#             */
-/*   Updated: 2023/02/10 20:05:34 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/02/14 21:13:03 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static void	ft_createstr(char *s, uintptr_t p, t_placeholder ph)
 	s[--i - ph.precision] = '0';
 }
 
-int	ft_printf_fd_p(int fd, uintptr_t p, t_placeholder ph)
+int	ft_dprintf_p(int fd, uintptr_t p, t_placeholder ph)
 {
 	char	*s;
 

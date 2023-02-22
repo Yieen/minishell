@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 16:45:38 by jharrach          #+#    #+#             */
-/*   Updated: 2023/02/10 17:48:01 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/02/14 21:08:49 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,13 +103,13 @@ int			ft_printf_x(unsigned int num, t_placeholder ph);
 int			ft_printf_d(long num, t_placeholder ph);
 int			ft_printf_u(unsigned int num, t_placeholder ph);
 const char	*ft_getph(t_placeholder *ph, const char *format);
-int			ft_printf_fd(int fd, const char *format, ...);
-int			ft_printf_fd_c(int fd, char c, t_placeholder ph);
-int			ft_printf_fd_s(int fd, const char *s1, t_placeholder ph);
-int			ft_printf_fd_p(int fd, uintptr_t p, t_placeholder ph);
-int			ft_printf_fd_x(int fd, unsigned int num, t_placeholder ph);
-int			ft_printf_fd_d(int fd, long num, t_placeholder ph);
-int			ft_printf_fd_u(int fd, unsigned int num, t_placeholder ph);
+int			ft_dprintf(int fd, const char *format, ...);
+int			ft_dprintf_c(int fd, char c, t_placeholder ph);
+int			ft_dprintf_s(int fd, const char *s1, t_placeholder ph);
+int			ft_dprintf_p(int fd, uintptr_t p, t_placeholder ph);
+int			ft_dprintf_x(int fd, unsigned int num, t_placeholder ph);
+int			ft_dprintf_d(int fd, long num, t_placeholder ph);
+int			ft_dprintf_u(int fd, unsigned int num, t_placeholder ph);
 
 char		*get_next_line(int fd);
 

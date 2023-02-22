@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf_fd_d.c                                   :+:      :+:    :+:   */
+/*   ft_dprintf_x.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/28 18:28:09 by jharrach          #+#    #+#             */
-/*   Updated: 2023/02/10 20:05:32 by jharrach         ###   ########.fr       */
+/*   Created: 2022/10/28 17:53:11 by jharrach          #+#    #+#             */
+/*   Updated: 2023/02/14 21:13:40 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/libft.h"
 
-static char	ft_nbrlen(int num)
+static char	ft_nbrlen(unsigned int num)
 {
 	char	len;
 
@@ -20,14 +20,14 @@ static char	ft_nbrlen(int num)
 	if (!num)
 		len++;
 	while (num)
-	{	
+	{
 		len++;
-		num /= 10;
+		num /= 16;
 	}
 	return (len);
 }
 
-static int	ft_handleflags(int num, t_placeholder *ph)
+static int	ft_handleflags(unsigned int num, t_placeholder *ph)
 {
 	int	i;
 
@@ -36,8 +36,8 @@ static int	ft_handleflags(int num, t_placeholder *ph)
 		ph->len = 0;
 	if (ph->precision > ph->len)
 		ph->len = ph->precision;
-	if (num < 0 || ph->flags & (F_PLUS + F_SPACE))
-		ph->len++;
+	if (ph->flags & F_HASH)
+		ph->len += 2;
 	if (ph->width < ph->len)
 		ph->width = ph->len;
 	i = ph->len;
@@ -46,7 +46,7 @@ static int	ft_handleflags(int num, t_placeholder *ph)
 	else
 	{
 		i = ph->width;
-		if (ph->flags & F_ZERO && !(ph->flags & F_DOT) && ph->len)
+		if (ph->flags & F_ZERO && !(ph->flags & F_DOT))
 		{
 			ph->precision = ph->width;
 			ph->len = ph->width;
@@ -55,40 +55,45 @@ static int	ft_handleflags(int num, t_placeholder *ph)
 	return (i);
 }
 
-static void	ft_createstr(char *s, long num, int i, t_placeholder ph)
+static void	ft_createstr(char *s, unsigned int num, int i, t_placeholder ph)
 {
 	ft_memset(s, ' ', ph.width);
 	if (ph.precision)
-		ft_memset(s + ph.width - ph.len, '0', ph.precision);
-	if (num < 0)
 	{
-		num *= -1;
-		s[ph.width - ph.len] = '-';
+		if (ph.flags & F_HASH && !(ph.flags & F_ZERO && !(ph.flags & F_DOT)))
+			ft_memset(s + ph.width - ph.len + 2, '0', ph.precision);
+		else
+			ft_memset(s + ph.width - ph.len, '0', ph.precision);
 	}
-	else if (ph.flags & F_PLUS)
-		s[ph.width - ph.len] = '+';
-	else if (ph.flags & F_SPACE)
-		s[ph.width - ph.len] = ' ';
 	if (!num && !(ph.flags & F_DOT && !ph.precision))
 		s[--i] = '0';
 	while (num)
 	{
-		s[--i] = num % 10 + 48;
-		num /= 10;
+		s[--i] = num % 16 + '0';
+		num /= 16;
+		if (s[i] > '9')
+			s[i] += ph.type - 81;
+	}
+	if (ph.flags & F_HASH)
+	{
+		s[ph.width - ph.len + 1] = ph.type;
+		s[ph.width - ph.len] = '0';
 	}
 }
 
-int	ft_printf_fd_d(int fd, long num, t_placeholder ph)
+int	ft_dprintf_x(int fd, unsigned int num, t_placeholder ph)
 {
 	char	*s;
 	int		i;
 
+	if (!num)
+		ph.flags &= ~F_HASH;
 	i = ft_handleflags(num, &ph);
-	s = (char *)malloc(sizeof(char) * ph.width);
+	s = malloc(sizeof(char) * ph.width);
 	if (!s)
 		return (0);
 	ft_createstr(s, num, i, ph);
-	write(fd, s, ph.width);
+	write (fd, s, ph.width);
 	free(s);
 	return (ph.width);
 }

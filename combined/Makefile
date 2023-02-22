@@ -6,13 +6,13 @@
 #    By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/07 22:00:28 by jharrach          #+#    #+#              #
-#    Updated: 2023/02/15 19:41:42 by jharrach         ###   ########.fr        #
+#    Updated: 2023/02/22 14:18:28 by jharrach         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= minishell
 
-SRC_NAME	= main pipes
+SRC_NAME	= main pipes execute
 
 SRC_DIR		= src/
 OBJ_DIR		= obj/

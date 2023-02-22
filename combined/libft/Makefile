@@ -6,7 +6,7 @@
 #    By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/06 18:19:07 by jharrach          #+#    #+#              #
-#    Updated: 2023/02/10 20:48:32 by jharrach         ###   ########.fr        #
+#    Updated: 2023/02/14 21:17:39 by jharrach         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -68,13 +68,13 @@ SRC_PRINTF			+= ft_printf_u
 SRC_PRINTF			+= ft_printf_x
 SRC_PRINTF			+= ft_printf
 
-SRC_PRINTF_FD		+= ft_printf_fd_c
-SRC_PRINTF_FD		+= ft_printf_fd_d
-SRC_PRINTF_FD		+= ft_printf_fd_p
-SRC_PRINTF_FD		+= ft_printf_fd_s
-SRC_PRINTF_FD		+= ft_printf_fd_u
-SRC_PRINTF_FD		+= ft_printf_fd_x
-SRC_PRINTF_FD		+= ft_printf_fd
+SRC_PRINTF_FD		+= ft_dprintf_c
+SRC_PRINTF_FD		+= ft_dprintf_d
+SRC_PRINTF_FD		+= ft_dprintf_p
+SRC_PRINTF_FD		+= ft_dprintf_s
+SRC_PRINTF_FD		+= ft_dprintf_u
+SRC_PRINTF_FD		+= ft_dprintf_x
+SRC_PRINTF_FD		+= ft_dprintf
 
 SRC_EXTRA			= ft_strcmp
 
@@ -90,7 +90,7 @@ SRC					+= $(addprefix src_1/, $(SRC_1))
 SRC					+= $(addprefix src_2/, $(SRC_2))
 SRC					+= $(addprefix src_b/, $(SRC_B))
 SRC					+= $(addprefix src_printf/, $(SRC_PRINTF))
-SRC					+= $(addprefix src_printf_fd/, $(SRC_PRINTF_FD))
+SRC					+= $(addprefix src_dprintf/, $(SRC_PRINTF_FD))
 SRC					+= $(addprefix src_get_next_line/, $(SRC_GET_NEXT_LINE))
 SRC					+= $(addprefix src_extra/, $(SRC_EXTRA))
 OBJ					= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC)))
@@ -109,7 +109,7 @@ objdir:
 	@mkdir -p $(OBJ_DIR)src_2
 	@mkdir -p $(OBJ_DIR)src_b
 	@mkdir -p $(OBJ_DIR)src_printf
-	@mkdir -p $(OBJ_DIR)src_printf_fd
+	@mkdir -p $(OBJ_DIR)src_dprintf
 	@mkdir -p $(OBJ_DIR)src_get_next_line
 	@mkdir -p $(OBJ_DIR)src_extra
 

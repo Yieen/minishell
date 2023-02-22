@@ -1,39 +1,48 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf_fd_c.c                                   :+:      :+:    :+:   */
+/*   ft_dprintf_s.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/01 18:35:52 by jharrach          #+#    #+#             */
-/*   Updated: 2023/02/10 20:05:29 by jharrach         ###   ########.fr       */
+/*   Created: 2022/11/01 18:37:30 by jharrach          #+#    #+#             */
+/*   Updated: 2023/02/14 21:13:12 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/libft.h"
 
-int	ft_printf_fd_c(int fd, char c, t_placeholder ph)
+static void	ft_handleflags(const char *s1, t_placeholder *ph)
 {
-	char	*s;
+	ph->len = ft_strlen(s1);
+	if (ph->flags & F_DOT && ph->precision < ph->len)
+		ph->len = ph->precision;
+	if (ph->width < ph->len)
+		ph->width = ph->len;
+}
 
-	if (ph.width <= 1)
-		return (write(fd, &c, 1));
+int	ft_dprintf_s(int fd, const char *s1, t_placeholder ph)
+{
+	const char	null[] = "(null)";
+	char		*s;
+	int			i;
+
+	if (!s1)
+		s1 = null;
+	ft_handleflags(s1, &ph);
 	s = (char *)malloc(sizeof(char) * ph.width);
 	if (!s)
 		return (0);
+	ft_memset(s, ' ', ph.width);
 	if (ph.flags & F_MINUS)
-	{
-		ft_memset(s, ' ', ph.width);
-		*s = c;
-	}
+		i = ph.width;
 	else
 	{
+		i = ph.len;
 		if (ph.flags & F_ZERO)
 			ft_memset(s, '0', ph.width);
-		else
-			ft_memset(s, ' ', ph.width);
-		s[ph.width - 1] = c;
 	}
+	ft_memcpy(s + ph.width - i, s1, ph.len);
 	write(fd, s, ph.width);
 	free(s);
 	return (ph.width);
