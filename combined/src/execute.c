@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 14:16:18 by jharrach          #+#    #+#             */
-/*   Updated: 2023/02/22 14:25:38 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/02/23 19:14:57 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,13 +86,20 @@ int	check_buildins(char **argv)
 	char const	buildin[][10] = {"echo", "pwd", "cd", "exit", "export", "unset", "env"};
 	int			(*ft_buildin[])(char **) = {ft_echo, ft_pwd, ft_cd};
 	int			i;
+	int			std_fd[2];
 
 	i = 0;
 	while (i < 7)
 	{
 		if (ft_strcmp(buildin[i], argv[0]) == 0)
 		{
+			std_fd[STDOUT_FILENO] = dup(STDOUT_FILENO);
+			printf("std_fd: %d\n", std_fd[STDOUT_FILENO]);
+			int file = open("out.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+			dup2(file, STDOUT_FILENO);
 			ft_buildin[i](argv);
+			dup2(std_fd[STDOUT_FILENO], STDOUT_FILENO);
+			printf("afterwards\n");
 			return (0);
 		}
 		i++;
@@ -102,6 +109,17 @@ int	check_buildins(char **argv)
 
 void	execute(t_shell *shell)
 {
+	pid_t	pid;
+
 	if (check_buildins(shell->parser_res[0]))
-		printf("call: %s\n", shell->parser_res[0][0]);
+	{
+		pid = fork();
+		if (pid == 0)
+		{
+			execve(get_pathname(shell->parser_res[0], shell->env_param), shell->parser_res[0], shell->env_param);
+			perror(shell->parser_res[0][0]);
+			exit(EXIT_FAILURE);
+		}
+		waitpid(pid, NULL, 0);
+	}
 }

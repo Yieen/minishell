@@ -10,87 +10,17 @@
 #include "../include/minishell.h"
 #include <errno.h>
 
-char	*ft_getenv(char *name, char **env)
+static void	ft_close_pipe(int *pipe)
 {
-	int	i;
-
-	if (!env)
-		return (NULL);
-	i = 0;
-	while (env[i])
-	{
-		if (ft_strcmp(env[i], name) == '=')
-			return (&env[i][ft_strlen(name) + 1]);
-		i++;
-	}
-	return (NULL);
+	close(pipe[0]);
+	close(pipe[1]);
 }
 
-char	*search_pathname(char *name, char **env)
+static void	dup2_error(int *pipe)
 {
-	const char	*path = ft_getenv("PATH", env);
-	char		**paths;
-	char		*pathname;
-	char		*tmp;
-
-	if (!path)
-		return (NULL);
-	paths = ft_split(path, ':');
-	while (*paths)
-	{
-		pathname = ft_strjoin(*paths, "/");
-		free(*paths);
-		paths++;
-		tmp = pathname;
-		pathname = ft_strjoin(pathname, name);
-		free(tmp);
-		if (access(pathname, F_OK) != 0)
-		{
-			free(pathname);
-			continue ;
-		}
-		if (access(pathname, X_OK) != 0)
-		{
-			printf("minishell: permission denied: %s\n", pathname);
-			free(pathname);
-			return (NULL);
-		}
-		return (pathname);
-	}
-	return (NULL);
-}
-
-char	*get_pathname(char **argv, char **env)
-{
-	char const	buildin[][10] = {"echo", "pwd", "cd", "exit", "export", "unset", "env"};
-	int			(*ft_buildin[])(char **) = {ft_echo, ft_pwd, ft_cd};
-	int			i;
-
-	if (ft_strchr(argv[0], '/') == 0)
-	{
-		i = 0;
-		while (i < 7)
-		{
-			if (!ft_strcmp(buildin[i], argv[0]))
-				exit(ft_buildin[i](argv));
-			i++;
-		}
-		return (search_pathname(argv[0], env));
-	}
-	else
-	{
-		if (access(argv[0], F_OK) != 0)
-		{
-			perror(argv[0]);
-			exit(EXIT_FAILURE);
-		}
-		if (access(argv[0], X_OK) != 0)
-		{
-			perror(argv[0]);
-			exit(EXIT_FAILURE);
-		}
-		return (argv[0]);
-	}
+	ft_close_pipe(pipe);
+	perror("minishell");
+	exit(EXIT_FAILURE);
 }
 
 void	pipex(t_shell *shell)
@@ -99,62 +29,111 @@ void	pipex(t_shell *shell)
 	int		i;
 	int		num = shell->pipe_cnts + 1;
 	pid_t	*pid = malloc(sizeof(*pid) * num);
-	char	*pathname;
 
-	i = num;
-	while (i--)
+	i = 0;
+	while (i < num)
 	{
-		if (i != 0)
+		if (i < num - 1)
 		{
-			pipe(fd[i % 2]);//can fail
+			if (pipe(fd[i % 2]) == -1)
+			{
+				if (i != 0)
+					ft_close_pipe(fd[(i + 1) % 2]);
+				perror("minishell");
+				return ;
+			}
 		}
-		pid[i] = fork();//can fail
+		pid[i] = fork();
+		if (pid[i] == -1)
+			perror("minishell");
 		if (pid[i] == 0)
 		{
 			if (i != 0)
 			{
-				dup2(fd[i % 2][0], STDIN_FILENO);
-				close(fd[i % 2][0]);
-				close(fd[i % 2][1]);
+				if (dup2(fd[(i + 1) % 2][0], STDIN_FILENO) == -1)
+					dup2_error(fd[(i + 1) % 2]);
+				ft_close_pipe(fd[(i + 1) % 2]);
 			}
-			if (i != num - 1)
+			if (i < num - 1)
 			{
-				dup2(fd[(i + 1) % 2][1], STDOUT_FILENO);
-				close(fd[(i + 1) % 2][0]);
-				close(fd[(i + 1) % 2][1]);
+				if (dup2(fd[i % 2][1], STDOUT_FILENO) == -1)
+					dup2_error(fd[i % 2]);
+				ft_close_pipe(fd[i % 2]);
 			}
-			// if (programs[i].outputfile != -1)
-			// {
-			// 	dup2(programs[i].outputfile, STDOUT_FILENO);//can fail
-			// 	close(programs[i].outputfile);
-			// }
-			// if (programs[i].inputfile != -1)
-			// {
-			// 	dup2(programs[i].inputfile, STDIN_FILENO);//can fail
-			// 	close(programs[i].inputfile);
-			// }
-			pathname = get_pathname(shell->parser_res[i], shell->env_param);
-			printf("pathname: %s\n", pathname);
-			execve(pathname, &shell->parser_res[i][0], shell->env_param);//can fail
-			// ft_putstr_fd("minishell: ", STDERR_FILENO);
-			// ft_putstr_fd(programs[i].argv[0], STDERR_FILENO);
-			// ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
-			exit(1);
+			execve(get_pathname(shell->parser_res[i], shell->env_param), shell->parser_res[i], shell->env_param);
+			perror(shell->parser_res[i][0]);
+			exit(EXIT_FAILURE);
 		}
-		// if (programs[i].outputfile != -1)
-		// {
-		// 	close(programs[i].outputfile);
-		// }
-		// if (programs[i].inputfile != -1)
-		// {
-		// 	close(programs[i].inputfile);
-		// }
-		if (i != num - 1)
-		{
-			close(fd[(i + 1) % 2][0]);
-			close(fd[(i + 1) % 2][1]);
-		}
+		if (i != 0)
+			ft_close_pipe(fd[(i + 1) % 2]);
+		i++;
 	}
-	for (int i = 0; i < shell->pipe_cnts + 1; i++)
+	for (int i = 0; i < num; i++)
 		waitpid(pid[i], NULL, 0);
 }
+
+// void	pipex(t_shell *shell)
+// {
+// 	int		fd[2][2];
+// 	int		i;
+// 	int		num = shell->pipe_cnts + 1;
+// 	pid_t	*pid = malloc(sizeof(*pid) * num);
+// 	char	*pathname;
+
+// 	i = num;
+// 	while (i--)
+// 	{
+// 		if (i != 0)
+// 		{
+// 			pipe(fd[i % 2]);//can fail
+// 		}
+// 		pid[i] = fork();//can fail
+// 		if (pid[i] == 0)
+// 		{
+// 			if (i != 0)
+// 			{
+// 				dup2(fd[i % 2][0], STDIN_FILENO);
+// 				close(fd[i % 2][0]);
+// 				close(fd[i % 2][1]);
+// 			}
+// 			if (i != num - 1)
+// 			{
+// 				dup2(fd[(i + 1) % 2][1], STDOUT_FILENO);
+// 				close(fd[(i + 1) % 2][0]);
+// 				close(fd[(i + 1) % 2][1]);
+// 			}
+// 			// if (programs[i].outputfile != -1)
+// 			// {
+// 			// 	dup2(programs[i].outputfile, STDOUT_FILENO);//can fail
+// 			// 	close(programs[i].outputfile);
+// 			// }
+// 			// if (programs[i].inputfile != -1)
+// 			// {
+// 			// 	dup2(programs[i].inputfile, STDIN_FILENO);//can fail
+// 			// 	close(programs[i].inputfile);
+// 			// }
+// 			pathname = get_pathname(shell->parser_res[i], shell->env_param);
+// 			printf("pathname: %s\n", pathname);
+// 			execve(pathname, &shell->parser_res[i][0], shell->env_param);//can fail
+// 			// ft_putstr_fd("minishell: ", STDERR_FILENO);
+// 			// ft_putstr_fd(programs[i].argv[0], STDERR_FILENO);
+// 			// ft_putstr_fd(": Permission denied\n", STDERR_FILENO);
+// 			exit(1);
+// 		}
+// 		// if (programs[i].outputfile != -1)
+// 		// {
+// 		// 	close(programs[i].outputfile);
+// 		// }
+// 		// if (programs[i].inputfile != -1)
+// 		// {
+// 		// 	close(programs[i].inputfile);
+// 		// }
+// 		if (i != num - 1)
+// 		{
+// 			close(fd[(i + 1) % 2][0]);
+// 			close(fd[(i + 1) % 2][1]);
+// 		}
+// 	}
+// 	for (int i = 0; i < shell->pipe_cnts + 1; i++)
+// 		waitpid(pid[i], NULL, 0);
+// }

@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/22 17:32:54 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/02/23 18:51:44 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,12 @@ void	read_prompt(t_shell *shell)
 	shell->prompt = malloc(sizeof(char) * 1000);	// TODO
 	// shell->prompt = "\"12\'7\'3\"45$1|78  a=1"; 
 	// shell->prompt = "/bin/echo 123 456 | /usr/bin/wc -l"; 
-		shell->prompt = "cd .."; 
+		shell->prompt = "pwd"; 
 } 
 
 int	is_sp_sim(char ch)
 {
-	const char	*special_simbols = "=| \t\n"; // $ not here
+const char	*special_simbols = "=| \t\n"; // $ not here
 	int cnt;
 
 	cnt = 0;
