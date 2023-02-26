@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 16:35:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/19 20:07:22 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/02/25 14:49:27 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,5 +106,81 @@ size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 		cnt++;
 	}
 	dst[dstlen] = '\0';
+	return (res);
+}
+
+// int	ft_atoi(const char *str)
+// {
+// 	long	num;
+// 	int		i;
+// 	int		mult;
+
+// 	num = 0;
+// 	i = 0;
+// 	mult = 1;
+// 	while (str[i] == ' ' || str[i] == '\n' || str[i] == '\t'
+// 		|| str[i] == '\v' || str[i] == '\f' || str[i] == '\r')
+// 		i++;
+// 	if (str[i] == '-' || str[i] == '+')
+// 	{
+// 		if (str[i] == '-')
+// 			mult = -mult;
+// 		i++;
+// 	}
+// 	while ((str[i]) && ((str[i] >= '0') && (str[i] <= '9')))
+// 	{
+// 		num = num * 10 + (str[i] - '0');
+// 		i++;
+// 	}
+// 	return ((int)(num * mult));
+// }
+
+static int	ft_intlen(int n)
+{
+	int		res;
+	long	work_int;
+
+	res = 0;
+	work_int = n;
+	if (work_int < 0)
+	{
+		res++;
+		work_int *= (-1);
+	}
+	while (work_int > 0)
+	{
+		res++;
+		work_int /= 10;
+	}
+	if (n == 0)
+		res++;
+	return (res);
+}
+
+char	*ft_itoa(int n)
+{
+	char	*res;
+	int		cnt;
+	int		len;
+	long	wrk_int;
+
+	wrk_int = n;
+	cnt = 0;
+	len = ft_intlen(n);
+	res = malloc(sizeof(char) * (len + 1));
+	if (!res)
+		return (NULL);
+	if (wrk_int < 0)
+	{
+		wrk_int *= (-1);
+		res[0] = '-';
+	}
+	res[len - cnt++] = '\0';
+	while (wrk_int >= 10)
+	{
+		res[len - cnt++] = (wrk_int % 10) + '0';
+		wrk_int /= 10 ;
+	}
+	res[len - cnt] = (wrk_int % 10) + '0';
 	return (res);
 }

@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/25 13:05:38 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/02/26 16:39:52 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 # define MINISHELL_H
 
 # include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <stdlib.h>
-#include <unistd.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <fcntl.h>
 
 
 typedef struct Lexer
@@ -27,11 +28,24 @@ typedef struct Lexer
 	int		st_nlm;	// start nem lexem
 	int		pipe_cnt;
 	int		arr_cnt;
+	int		arr_lf_cnt;
 	int		sng_qut;
 	int		dub_qut;
 	int		dollar;
 	char	*command;
 }	t_lexer;
+
+typedef struct pipex
+{
+	int		pr_id;
+	// char	*input_fs;
+	// char	*output_fs;
+	// int		output_mod;
+	// int		fd_herdoc;
+	int		input_fd;
+	int		output_fd;
+	int		is_exec;
+}	t_pipex;
 
 typedef struct Shell
 {
@@ -42,17 +56,13 @@ typedef struct Shell
 	int		cont_wrk;
 	int		pipe_cnts;
 	int		arr_cnts;
+	int		arr_lf_cnts;
 	char	***parser_res;
+	t_pipex	**auxilar;
+	int		last_comm_ret;
 }	t_shell;
 
-typedef struct Environment
-{
-	char	*key;
-	char	*value;
-	char	*str;
-	struct Environment	*next;
-	struct Environment	*prev;
-}	t_env_stract;
+
 
 // libft_fun
 char	*ft_strnstr(const char *haystack, const char *needle, size_t len);
@@ -60,6 +70,8 @@ int		ft_strlen(const char *s);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
 char	*ft_substr(const char *s, unsigned int start, size_t len);
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
+// int		ft_atoi(const char *str);
+char	*ft_itoa(int n);
 
 // wrk_w_envp
 char	*env_get_value(char **envp, char *key);
@@ -72,7 +84,7 @@ char	**copy_string_array(char **src, int size) ;
 
 // builtins
 void	unset(t_shell *shell, char *new_str);
-void	export(t_shell *shell, char *new_str);
+int		export(t_shell *shell, char *new_str);
 void	add_export(t_shell *shell, char *new_str);
 void	env(t_shell *shell);
 void	ft_clear(char	**lsttclear);
@@ -80,6 +92,10 @@ void	ft_clear(char	**lsttclear);
 // parser and add
 void	locate_parser_mem(t_shell *shell);
 void	parser(t_shell *shell);
+void	post_parser(t_shell *shell);
+
+// main
+int	is_sp_sim(char ch);
 
 #endif
 

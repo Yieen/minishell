@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/25 13:48:26 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/02/26 16:48:00 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	create_env(t_shell *new_shell, char **envp)
 	// new_shell->prompt = readline("get_curr_dirr>");
 	new_shell->cont_wrk = 1;
 	new_shell->cmnd_cnt = 0;	//	TODO
-
+	new_shell->last_comm_ret = 0;
 	new_shell->lexer_res = malloc(sizeof(char *) * 100); // TODO
 
 	return (0);
@@ -43,14 +43,15 @@ void	read_prompt(t_shell *shell)
 	// shell->prompt = malloc(sizeof(char *) * (wrds_s_cnt(shell->prompt) + 1));	
 	shell->prompt = malloc(sizeof(char) * 1000);	// TODO
 	// shell->prompt = " 123 a>b 555555555555666666| a=b 123 555555555555666666| fgh"; 
-	shell->prompt = "echo a>>bs$a$no$a2 1| wc -l | export a=abs"; 
+	// shell->prompt = "echo ls>>bs $a$$ as 1| wc -l | exp<<ort a=abs"; 
 	// shell->prompt = "\'echo abs>$a$|no$a2$\'1|\"wc -l\"| export a=abs"; 	
-	// shell->prompt = "\"echo a>bs$a$|no$a2 $\"1|\"wc -l\"| export a=abs"; 		
+	// shell->prompt = "\"echo a>bs$a$|no$a2 $\"1|\"wc -l\"| export a=abs"; 
+	shell->prompt = "echo ls > 35   | test add sth > > sth1 | asd 123"; 			
 } 
 
 int	is_sp_sim(char ch)
 {
-	const char	*special_simbols = "|> \t\n"; // $ not here
+	const char	*special_simbols = "|>< \t\n"; // $ not here
 	int cnt;
 
 	cnt = 0;
@@ -70,6 +71,8 @@ int	find_end_key(char *str, int st)
 {
 	while (str[st])
 	{
+		if (str[st] == '?')
+			return (st);
 		if(is_sp_sim(str[st]) || (str[st] == '$'))
 			return (st - 1);
 		st++;
@@ -114,8 +117,11 @@ void	work_with_dollar(t_lexer *lxr, t_shell *shell)
 				save_pos[s_p_cnt] = d_pos;
 				s_p_cnt++;				
 			}
-			value = env_get_value(shell->env_param, key);
-			printf("value=%s\n", value);			
+			if (key[0] == '?')
+				value = ft_itoa(shell->last_comm_ret);
+			else
+				value = env_get_value(shell->env_param, key);
+			// printf("value=%s\n", value);			
 			if (value != 0)
 				ft_strlcat(rs_st, value, ft_strlen(rs_st) + ft_strlen(value) + 1);
 			start = ft_substr(shell->lexer_res[i], end_key + 1, ft_strlen(shell->lexer_res[i]) - end_key);		
@@ -178,9 +184,30 @@ int	work_pipe_or_ec(t_shell *shell, t_lexer	*lxr)
 	}
 	else if (str[cnt] == '>')
 	{
-		shell->lexer_res[lxr->l_cnt] = ">";
-		lxr->arr_cnt++;
+		if (str[cnt+1] == '>')
+		{
+			shell->lexer_res[lxr->l_cnt] = ">>";
+			lxr->s_cnt++;
+		}
+		else
+		{
+			shell->lexer_res[lxr->l_cnt] = ">";
+			lxr->arr_cnt++;
+		}
 	}
+	else if (str[cnt] == '<')
+	{
+		if (str[cnt+1] == '<')
+		{
+			shell->lexer_res[lxr->l_cnt] = "<<";
+			lxr->s_cnt++;
+		}
+		else
+		{
+			shell->lexer_res[lxr->l_cnt] = "<";
+			lxr->arr_lf_cnt++;
+		}
+	}	
 	lxr->l_cnt++;
 	return (0);
 }
@@ -229,6 +256,7 @@ void	init_lexer(t_shell *shell, t_lexer	*lexer_st)
 	lexer_st->command = shell->prompt;
 	lexer_st->pipe_cnt = 0;
 	lexer_st->arr_cnt = 0;
+	lexer_st->arr_lf_cnt = 0;
 }
 
 void	lexer(t_shell *shell)
@@ -241,7 +269,7 @@ void	lexer(t_shell *shell)
 		lexer_st.s_cnt++;
 	while (lexer_st.s_cnt <= ft_strlen(shell->prompt))
 	{
-		if ((shell->prompt[lexer_st.s_cnt] == '|') || (shell->prompt[lexer_st.s_cnt] == '>'))
+		if ((shell->prompt[lexer_st.s_cnt] == '|') || (shell->prompt[lexer_st.s_cnt] == '>') || (shell->prompt[lexer_st.s_cnt] == '<'))
 			work_pipe_or_ec(shell, &lexer_st);
 		else if (start_new_lexem(shell, &lexer_st))
 			lexer_st.st_nlm = lexer_st.s_cnt;
@@ -256,7 +284,8 @@ void	lexer(t_shell *shell)
 	shell->lexer_res[lexer_st.l_cnt] = 0;
 	shell->pipe_cnts = lexer_st.pipe_cnt;
 	shell->arr_cnts = lexer_st.arr_cnt;
-	printf("word cnt=%d\n", lexer_st.l_cnt);
+	shell->arr_lf_cnts = lexer_st.arr_lf_cnt;
+	// printf("word cnt=%d\n", lexer_st.l_cnt);
 	printf("pipe cnt=%d\n", lexer_st.pipe_cnt);
 	work_with_dollar(&lexer_st, shell);
 }
@@ -302,7 +331,7 @@ int main(int argc, char **argv, char **envp)
 	read_prompt(&shell);
 	lexer(&shell);
 	int	i;
-
+	int j;
 	// i = 0;
 	// while (shell.lexer_res[i])
 	// {
@@ -313,10 +342,10 @@ int main(int argc, char **argv, char **envp)
 	// printf("\n");	
 	
 	parser(&shell);
-
+	shell.auxilar = malloc(sizeof(t_pipex *) * shell.pipe_cnts+ 1);
 	printf("\n");
 	i = 0;
-	int j = 0;
+	j = 0;
 	while (shell.parser_res[i])
 	{
 		while (shell.parser_res[i][j] != 0)
@@ -328,18 +357,50 @@ int main(int argc, char **argv, char **envp)
 		i++;
 	}
 	printf("\n");
+
+	post_parser(&shell);
+
+	i = 0;
+	j = 0;
+	while (shell.parser_res[i])
+	{
+		while (shell.parser_res[i][j] != 0)
+		{
+			printf("%d %d %s;\n",i,j, shell.parser_res[i][j]);
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+	printf("\n");	
+
+	i = 0;
+	// j = 0;
+	while (i < 3)
+	{
+		// while (shell.parser_res[i][j] != 0)
+		// {
+			printf("input_fd %d \n",shell.auxilar[i]->input_fd);
+			printf("output_fd %d \n", shell.auxilar[i]->output_fd);
+			printf("is_exec %d \n",shell.auxilar[i]->is_exec);
+		// 	j++;
+		// }
+		// j = 0;
+		i++;
+	}	
+		printf("\n");	
 	// env(&shell);
 
 	// printf("strr_calc=%d\n", twodimarr_str_calc(shell.parser_res[1]));
-
-// export(&shell, "a=123");
+// int test = export(&shell, "a1234&=123");
+// printf("exp_res = %d", test);
 
 // // int test = pos_into_env(shell.env_param, "SECURITYSESSIONID=");
 // // printf("pos_a=%d\n", test);
 // // unset(&shell, "SECURITYSESSIONID=");
 // env(&shell);
 // // unset(&shell, "a=");
-// export(&shell, "a=new_a");
+// export(&shell, "?=new_a");
 // env(&shell);
 // unset(&shell, "a");
 // env(&shell);

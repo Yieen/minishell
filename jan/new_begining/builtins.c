@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:07:06 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/24 16:14:52 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/02/25 15:37:14 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,11 +59,30 @@ void	add_export(t_shell *shell, char *new_str)
 	shell->env_param[envp_size + 1] = 0;
 }
 
-void	export(t_shell *shell, char *new_str)
+int check_key(char *str, int eq_pos)
+{
+	int	i;
+
+	i = 0;
+	if (!(((str[0] >= 'a') && (str[0] <= 'z')) || ((str[0] >= 'A') && (str[0] <= 'Z'))))
+		return (0);
+	while (i < eq_pos)
+	{
+		if ((str[i] >= 'a' && str[i] <= 'z') || (str[i] >= 'A' && str[i] <= 'Z')
+			|| (str[i] >= '0' && str[i] <= '9'))
+			i++;
+		else
+			return (0);
+	}
+	return (1);
+}
+
+int	export(t_shell *shell, char *new_str)
 {
 	int env_ind;
 
-	// write(1,"1\n",2);
+	if (!check_key(new_str, char_srch(new_str, '=')))
+		return (0);
 	env_ind = pos_into_env(shell->env_param, cut_equ(new_str));
 	if (env_ind == -1)
 		add_export(shell, new_str);
@@ -72,6 +91,7 @@ void	export(t_shell *shell, char *new_str)
 		// free(shell->env_param[env_ind]);
 		shell->env_param[env_ind] = new_str;
 	}
+	return (1);
 }
 
 void	env(t_shell *shell)
