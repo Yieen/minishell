@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 15:50:40 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/24 17:29:35 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/02/27 17:45:25 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,14 @@ char	*env_get_value(char **envp, char *key)
 {
 	int		pos;
 	char	*res;
-	int		len;
+	// int		len;
 
 	pos = pos_into_env(envp, key);
 	if(pos == -1)
 		return (0);
-	len = ft_strlen(envp[pos]);
-	res = malloc(sizeof(char) * (len + 1));
-	res = &envp[pos][char_srch(envp[pos],'=') + 1];
+	// len = ft_strlen(envp[pos]);
+	// res = malloc(sizeof(char) * (len + 1));
+	res = &envp[pos][char_srch(envp[pos],'=') + 1]; // TODO
 	// printf("%s", res);
 	return (res);
 }
@@ -96,8 +96,9 @@ char	**del_ind_fr_array(char **src, int size, int del_i)
 	{
 		if (old_cnt != del_i)
 		{
-			dest[old_cnt] = malloc((ft_strlen(src[i]) + 1) * sizeof(char));
-			ft_strlcpy(dest[old_cnt], src[i], ft_strlen(src[i]) + 1);
+			// dest[old_cnt] = malloc((ft_strlen(src[i]) + 1) * sizeof(char));
+			// ft_strlcpy(dest[old_cnt], src[i], ft_strlen(src[i]) + 1);
+			dest[old_cnt] = src[i];
 			old_cnt++;
 		}
 		else
