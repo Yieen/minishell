@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/27 20:42:19 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/02/28 15:36:41 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -465,7 +465,7 @@ atexit(checkleaks);
 // // unset(&shell, "SECURITYSESSIONID=");
 // env(&shell);
 // // unset(&shell, "a=");
-// export(&shell, "a=new_a");
+export(&shell, "");
 // export(&shell, "a=new_a2");
 // export(&shell, "a=new_a");
 // env(&shell);

@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:07:06 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/27 18:12:55 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/02/28 15:36:25 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,27 @@ int	check_key(char *str, int eq_pos)
 	return (1);
 }
 
+void	export_env(t_shell *shell)
+{
+	int	i;
+
+	i = -1;
+	while (shell->env_param[++i])
+	{
+		printf("declare -x %s\n", shell->env_param[i]);
+	}	
+}
+
 int	export(t_shell *shell, char *new_str)
 {
 	int		env_ind;
 	char	*temp;
 
+	if ((new_str == 0) || (new_str[0] == '\0'))
+	{
+		export_env(shell);
+		return (1);
+	}
 	if (!check_key(new_str, char_srch(new_str, '=')))
 		return (0);
 	temp = cut_equ(new_str);
