@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/27 18:26:39 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/02/27 20:42:19 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,10 +97,11 @@ void	read_prompt(t_shell *shell)
 	// shell->prompt = malloc(sizeof(char *) * (wrds_s_cnt(shell->prompt) + 1));	
 	// shell->prompt = malloc(sizeof(char) * 1000);	// TODO
 	// shell->prompt = " 123 a>b 555555555555666666| a=b 123 555555555555666666| fgh"; 
-	// shell->prompt = "echo ls>>bs $a$$ as 1| wc -l | exp<<ort a=abs"; 
+	shell->prompt = "echo ls>>bs $a $$ as 1| wc -l | exp<<ort a=abs"; 
 	// shell->prompt = "\'echo abs>$a$|no$a2$\'1|\"wc -l\"| export a=abs"; 	
 	// shell->prompt = "\"echo a>bs$a$|no$a2 $\"1|\"wc -l\"| export a=abs"; 
-	shell->prompt = "echo ls > 35 $  | test add sth > > sth1 | asd 123"; 			
+	// shell->prompt = "echo ls > 35 $  | test add sth > > sth1 | asd 123"; 	
+		// shell->prompt = "echo h < asddff";	
 } 
 
 int	is_sp_sim(char ch)
@@ -134,66 +135,73 @@ int	find_end_key(char *str, int st)
 	return (st - 1);
 }
 
-void	work_with_dollar(t_lexer *lxr, t_shell *shell)
+void	first_part_wwd(t_dolar	*wwd, int i)
+{
+	wwd->save_pos = malloc(sizeof(char) * ft_strlen(wwd->tlr[i]));
+	wwd->s_p_cnt = 0;
+	printf("%d %s;\n",i, wwd->tlr[i]);	//	delete
+	wwd->d_pos = char_srch(wwd->tlr[i], '$');	
+}
+
+void	second_part_wwd(t_dolar	*wwd, int i,  t_shell *shell)
+{
+	wwd->start = ft_substr(wwd->tlr[i], 0, wwd->d_pos);			
+	ft_strlcpy(wwd->rs_st, wwd->start, ft_strlen(wwd->start) + 1);
+	free(wwd->start);
+	wwd->end_key = find_end_key(wwd->tlr[i], wwd->d_pos + 1);
+	wwd->key = ft_substr(wwd->tlr[i], wwd->d_pos + 1, wwd->end_key - wwd->d_pos);
+	if ((wwd->key[0] == '\0') || (wwd->key == 0) || (wwd->key[0] == '\"'))
+	{
+		wwd->tlr[i][wwd->d_pos] = '|';
+		wwd->save_pos[wwd->s_p_cnt] = wwd->d_pos;
+		wwd->s_p_cnt++;				
+	}
+	if (wwd->key[0] == '?')
+		wwd->value = ft_itoa(shell->last_comm_ret);
+	else
+		wwd->value = env_get_value(shell->env_param, wwd->key);		
+	free(wwd->key);			
+}
+
+void	third_part_wwd(t_dolar	*wwd, int i)
+{
+	if (wwd->value != 0)
+		ft_strlcat(wwd->rs_st, wwd->value, ft_strlen(wwd->rs_st) + ft_strlen(wwd->value) + 1);
+	wwd->start = ft_substr(wwd->tlr[i], wwd->end_key + 1, ft_strlen(wwd->tlr[i]) - wwd->end_key);
+	ft_strlcat(wwd->rs_st, wwd->start, ft_strlen(wwd->rs_st) + ft_strlen(wwd->start) + 1);
+	free(wwd->start);
+	free(wwd->tlr[i]);
+	wwd->tlr[i] = malloc(sizeof(char) * 1024);
+	ft_strlcpy(wwd->tlr[i], wwd->rs_st, ft_strlen(wwd->rs_st) + 1);	
+	wwd->d_pos = char_srch(wwd->rs_st, '$');
+}
+
+void	work_with_dollar( t_shell *shell) 
 {
 	int		i;
-	int		d_pos;
-	int		end_key;
-	char	*key;
-	char	*rs_st;
-	char	*value;
-	char	*start;
-	int		*save_pos;
-	int		s_p_cnt;
 	int 	j;
+	t_dolar	wwd; 
 
 	i = 0;
-	rs_st = malloc(sizeof(char) * 1024);	// TODO		
-	while (shell->lexer_res[i])
+	wwd.tlr = shell->lexer_res;	
+	wwd.rs_st = malloc(sizeof(char) * 1024);	// TODO	(save longest value * $cnt)
+	while (wwd.tlr[i])
 	{
-		if ((shell->lexer_res[i][0] == '\'') && (i++))
+		if ((wwd.tlr[i][0] == '\'') && (i++))
 			continue;
-		save_pos = malloc(sizeof(char) * ft_strlen(shell->lexer_res[i]));
-		s_p_cnt = 0;
-		printf("%d %s;\n",i, shell->lexer_res[i]);
-		d_pos = char_srch(shell->lexer_res[i], '$');
-		while(d_pos != -1)
+		first_part_wwd(&wwd, i);
+		while(wwd.d_pos != -1)
 		{
-			start = ft_substr(shell->lexer_res[i], 0, d_pos);			
-			ft_strlcpy(rs_st, start, ft_strlen(start) + 1);
-			free(start);
-			end_key = find_end_key(shell->lexer_res[i], d_pos + 1);
-			key = ft_substr(shell->lexer_res[i], d_pos + 1, end_key - d_pos);
-			// printf("key=%s\n", key);
-			if ((key[0] == '\0') || (key == 0) || (key[0] == '\"'))
-			{
-				shell->lexer_res[i][d_pos] = '|';
-				save_pos[s_p_cnt] = d_pos;
-				s_p_cnt++;				
-			}
-			if (key[0] == '?')
-				value = ft_itoa(shell->last_comm_ret);
-			else
-				value = env_get_value(shell->env_param, key);
-			// printf("value=%s\n", value);			
-			if (value != 0)
-				ft_strlcat(rs_st, value, ft_strlen(rs_st) + ft_strlen(value) + 1);
-			start = ft_substr(shell->lexer_res[i], end_key + 1, ft_strlen(shell->lexer_res[i]) - end_key);		
-			ft_strlcat(rs_st, start, ft_strlen(rs_st) + ft_strlen(start) + 1);
-			free(start);
-			free(shell->lexer_res[i]);
-			shell->lexer_res[i] = malloc(sizeof(char) * 1024);
-			ft_strlcpy(shell->lexer_res[i], rs_st, ft_strlen(rs_st) + 1);	
-			d_pos = char_srch(rs_st, '$');
-			free(key);
+			second_part_wwd(&wwd, i, shell);
+			third_part_wwd(&wwd, i);	
 		}
 		j = -1;
-		while (++j < s_p_cnt)
-			shell->lexer_res[i][save_pos[j]] = '$';
-		free(save_pos);		
+		while (++j < wwd.s_p_cnt)
+			wwd.tlr[i][wwd.save_pos[j]] = '$';
+		free(wwd.save_pos);	
 		i++;
 	}	
-	free(rs_st);
+	free(wwd.rs_st);
 }
 
 int	start_new_lexem(t_shell *shell, t_lexer	*lxr)
@@ -209,7 +217,6 @@ int	start_new_lexem(t_shell *shell, t_lexer	*lxr)
 	{
 		lxr->st_nlm = cnt;
 		res = 1;
-		// printf("start_n_l=%d\n", lxr->st_nlm);
 		if (str[cnt] == '\'')
 			lxr->sng_qut = 1;
 		else if (str[cnt] == '\"')
@@ -343,7 +350,8 @@ void	lexer(t_shell *shell)
 	shell->arr_lf_cnts = lexer_st.arr_lf_cnt;
 	// printf("word cnt=%d\n", lexer_st.l_cnt);
 	printf("pipe cnt=%d\n", lexer_st.pipe_cnt);
-	work_with_dollar(&lexer_st, shell);
+	// work_with_dollar(&lexer_st, shell);
+	work_with_dollar(shell);
 }
 
 void	run_shell(t_shell *shell)
@@ -436,21 +444,15 @@ atexit(checkleaks);
 	}
 	printf("\n");	
 
-	// i = 0;
-	// // j = 0;
-	// while (i < 3)
-	// {
-	// 	// while (shell.parser_res[i][j] != 0)
-	// 	// {
-	// 		printf("input_fd %d \n",shell.auxilar[i]->input_fd);
-	// 		printf("output_fd %d \n", shell.auxilar[i]->output_fd);
-	// 		printf("is_exec %d \n",shell.auxilar[i]->is_exec);
-	// 	// 	j++;
-	// 	// }
-	// 	// j = 0;
-	// 	i++;
-	// }	
-	// 	printf("\n");	
+	i = 0;
+	while (i < 1)
+	{
+		printf("input_fd %d \n",shell.auxilar[i]->input_fd);
+		printf("output_fd %d \n", shell.auxilar[i]->output_fd);
+		printf("is_exec %d \n",shell.auxilar[i]->is_exec);
+		i++;
+	}	
+		printf("\n");	
 
 	// env(&shell);
 
@@ -463,12 +465,12 @@ atexit(checkleaks);
 // // unset(&shell, "SECURITYSESSIONID=");
 // env(&shell);
 // // unset(&shell, "a=");
-export(&shell, "a=new_a");
-export(&shell, "a=new_a2");
-export(&shell, "a=new_a");
+// export(&shell, "a=new_a");
+// export(&shell, "a=new_a2");
+// export(&shell, "a=new_a");
 // env(&shell);
-unset(&shell, "a");
-env(&shell);
+// unset(&shell, "a");
+// env(&shell);
 // env_get_value(shell.env_param, "a");
 	// printf("cmnd_cnt=%d\n", shell.cmnd_cnt);
 	close_env(&shell);

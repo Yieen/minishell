@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:06:25 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/27 18:17:51 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/02/27 19:26:27 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,6 +160,7 @@ void	post_parser(t_shell *shell)
 							break;
 						}	
 						if ((shell->auxilar[i]->output_fd == -1) || (is_sp_sim(shell->parser_res[i][j + 1][0])))
+						
 							shell->auxilar[i]->is_exec = 0;	
 						save_pos[s_p_cnt] = j;
 						save_pos[s_p_cnt + 1] = j + 1;

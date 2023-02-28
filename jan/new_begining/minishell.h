@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/26 16:39:52 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/02/27 20:39:44 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,18 @@
 # include <unistd.h>
 # include <fcntl.h>
 
+typedef struct Dollar
+{
+	int		d_pos;
+	int		end_key;
+	char	*key;
+	char	*rs_st;
+	char	*value;
+	char	*start;
+	int		*save_pos;
+	int		s_p_cnt;
+	char	**tlr;	
+}	t_dolar;
 
 typedef struct Lexer
 {
