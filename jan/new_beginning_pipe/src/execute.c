@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 14:16:18 by jharrach          #+#    #+#             */
-/*   Updated: 2023/02/27 19:36:54 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/01 15:47:44 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,31 +185,42 @@ int	check_buildins(t_shell *shell)
 	char const			buildin[][10] = {"echo", "pwd", "cd", "exit", "export", "unset", "env"};
 	t_buildin const		ft_buildin[] = {b_echo, b_pwd, b_cd, b_exit, b_export, b_unset, b_env};
 	int					i;
-	int					std_fd[2];
-	int					ret;
+	int					std_out;
 
 	i = 0;
 	while (i < 7)
 	{
 		if (ft_strcmp(buildin[i], shell->parser_res[0][0]) == 0)
 		{
+			if (shell->auxilar[0]->output_fd >= 0)
+				close(shell->auxilar[0]->output_fd);
 			if (shell->auxilar[0]->input_fd > 0)
 			{
-				std_fd[STDOUT_FILENO] = dup(STDOUT_FILENO);
-				ret = dup2(shell->auxilar[0]->input_fd, STDOUT_FILENO);//
+				std_out = dup(STDOUT_FILENO);
+				if (std_out == -1)
+				{
+					perror("minishell");//macro
+					close(shell->auxilar[0]->input_fd);
+					b_exit(shell, 0);//
+				}
+				if (dup2(shell->auxilar[0]->input_fd, STDOUT_FILENO) == -1)
+				{
+					perror("minishell");//macro
+					close(shell->auxilar[0]->input_fd);
+					b_exit(shell, 0);//
+				}
 				close(shell->auxilar[0]->input_fd);
-			}
-			if (shell->auxilar[0]->output_fd >= 0)
-			{
-				std_fd[0] = dup(STDIN_FILENO);
-				ret = dup2(shell->auxilar[0]->output_fd, STDIN_FILENO);//
-				close(shell->auxilar[0]->output_fd);
 			}
 			shell->last_comm_ret = ft_buildin[i](shell, 0);
 			if (shell->auxilar[0]->input_fd > 0)
-				dup2(std_fd[STDOUT_FILENO], STDOUT_FILENO);
-			if (shell->auxilar[0]->output_fd >= 0)
-				dup2(std_fd[0], STDIN_FILENO);
+			{
+				if (dup2(std_out, STDOUT_FILENO) == -1)
+				{
+					perror("minishell");//macro
+					close(std_out);
+					b_exit(shell, 0);//
+				}
+			}
 			return (0);
 		}
 		i++;
@@ -223,6 +234,8 @@ void	execute(t_shell *shell)
 	int		status;
 	int		stdout_fd;
 
+	if (!shell->auxilar[0]->is_exec)
+		return ;
 	if (check_buildins(shell))
 	{
 		if (!shell->auxilar[0]->is_exec)
