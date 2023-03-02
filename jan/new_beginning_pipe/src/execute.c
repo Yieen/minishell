@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jan-arvid <jan-arvid@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 14:16:18 by jharrach          #+#    #+#             */
-/*   Updated: 2023/03/01 15:47:44 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/01 16:53:45 by jan-arvid        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,12 +180,39 @@ int b_env(t_shell *shell, int i)
 	return (EXIT_SUCCESS);
 }
 
+static void	buildin_with_redirection(t_shell *shell, t_buildin ft_buildin)
+{
+	int	std_out;
+
+	std_out = dup(STDOUT_FILENO);
+	if (std_out == -1)
+	{
+		perror("minishell");//macro
+		close(shell->auxilar[0]->input_fd);
+		b_exit(shell, 0);//
+	}
+	if (dup2(shell->auxilar[0]->input_fd, STDOUT_FILENO) == -1)
+	{
+		perror("minishell");//macro
+		close(shell->auxilar[0]->input_fd);
+		close(std_out);
+		b_exit(shell, 0);//
+	}
+	close(shell->auxilar[0]->input_fd);
+	shell->last_comm_ret = ft_buildin(shell, 0);
+	if (dup2(std_out, STDOUT_FILENO) == -1)
+	{
+		perror("minishell");//macro
+		close(std_out);
+		b_exit(shell, 0);//
+	}
+}
+
 int	check_buildins(t_shell *shell)
 {
 	char const			buildin[][10] = {"echo", "pwd", "cd", "exit", "export", "unset", "env"};
 	t_buildin const		ft_buildin[] = {b_echo, b_pwd, b_cd, b_exit, b_export, b_unset, b_env};
 	int					i;
-	int					std_out;
 
 	i = 0;
 	while (i < 7)
@@ -195,32 +222,9 @@ int	check_buildins(t_shell *shell)
 			if (shell->auxilar[0]->output_fd >= 0)
 				close(shell->auxilar[0]->output_fd);
 			if (shell->auxilar[0]->input_fd > 0)
-			{
-				std_out = dup(STDOUT_FILENO);
-				if (std_out == -1)
-				{
-					perror("minishell");//macro
-					close(shell->auxilar[0]->input_fd);
-					b_exit(shell, 0);//
-				}
-				if (dup2(shell->auxilar[0]->input_fd, STDOUT_FILENO) == -1)
-				{
-					perror("minishell");//macro
-					close(shell->auxilar[0]->input_fd);
-					b_exit(shell, 0);//
-				}
-				close(shell->auxilar[0]->input_fd);
-			}
-			shell->last_comm_ret = ft_buildin[i](shell, 0);
-			if (shell->auxilar[0]->input_fd > 0)
-			{
-				if (dup2(std_out, STDOUT_FILENO) == -1)
-				{
-					perror("minishell");//macro
-					close(std_out);
-					b_exit(shell, 0);//
-				}
-			}
+				buildin_with_redirection(shell, ft_buildin[i]);
+			else
+				shell->last_comm_ret = ft_buildin[i](shell, 0);
 			return (0);
 		}
 		i++;
@@ -232,7 +236,6 @@ void	execute(t_shell *shell)
 {
 	pid_t	pid;
 	int		status;
-	int		stdout_fd;
 
 	if (!shell->auxilar[0]->is_exec)
 		return ;
@@ -241,16 +244,23 @@ void	execute(t_shell *shell)
 		if (!shell->auxilar[0]->is_exec)
 			return ;
 		pid = fork();
+		if (pid == -1)
+		{
+			perror("minishell");//
+			b_exit(shell, 0);//
+		}
 		if (pid == 0)
 		{
 			if (shell->auxilar[0]->input_fd > 0)
 			{
-				dup2(shell->auxilar[0]->input_fd, STDOUT_FILENO);//
+				if (dup2(shell->auxilar[0]->input_fd, STDOUT_FILENO) == -1)
+					;//
 				close(shell->auxilar[0]->input_fd);
 			}
 			if (shell->auxilar[0]->output_fd >= 0)
 			{
-				dup2(shell->auxilar[0]->output_fd, STDIN_FILENO);//
+				if (dup2(shell->auxilar[0]->output_fd, STDIN_FILENO) == -1)
+					;//
 				close(shell->auxilar[0]->output_fd);
 			}
 			execve(get_pathname(shell, 0), shell->parser_res[0], shell->env_param);
@@ -259,6 +269,8 @@ void	execute(t_shell *shell)
 		}
 		if (shell->auxilar[0]->input_fd > 0)
 			close(shell->auxilar[0]->input_fd);
+		if (shell->auxilar[0]->output_fd >= 0)
+			close(shell->auxilar[0]->output_fd);
 		waitpid(pid, &status, 0);
 		shell->last_comm_ret = WEXITSTATUS(status);
 	}
