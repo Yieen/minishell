@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/28 15:36:41 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/02 17:11:32 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,21 +32,16 @@ int	create_env(t_shell *new_shell, char **envp)
 	// printf("size shell_env=%d\n", twodimarr_str_calc(new_shell->env_param));
 	// new_shell->prompt = readline("get_curr_dirr>");
 	new_shell->cont_wrk = 1;
-	new_shell->cmnd_cnt = 0;	//	TODO
+	// new_shell->cmnd_cnt = 0;	
 	new_shell->last_comm_ret = 0;
-	new_shell->lexer_res = malloc(sizeof(char *) * 100); // TODO
 
 	return (0);
 }
 
-void	close_env(t_shell *shell)
+void	free_lexer(t_shell *shell)
 {
 	int	i;
 
-
-
-
-	//	free lexer_res
 	i = 0;	
 	while (shell->lexer_res[i])
 	{
@@ -55,26 +50,21 @@ void	close_env(t_shell *shell)
 		i++;
 	}
 	free(shell->lexer_res);
+	ft_clear(shell->env_param);	
+}
 
+void	close_env(t_shell *shell)
+{
+	int	i;
 
-	// free parser_res
-i = 0;
-int j = 0;
+	free_lexer(shell);	
+	i = 0;
 	while (shell->parser_res[i])
 	{
-		// while (shell->parser_res[i][j])
-		// {
-		// 	// printf("i=%d j=%d", i,j);
-		// 	if (!((shell->parser_res[i][j][0] == '|') || (shell->parser_res[i][j][0] == '>') || (shell->parser_res[i][j][0] == '<')))
-		// 		free(shell->parser_res[i][j]);
-		// 	j++;
-		// }
 		free(shell->parser_res[i]);
 		i++;
 	}
 	free(shell->parser_res);
-
-	// free auxilar
 	i = 0;
 	while (shell->auxilar[i])
 	{
@@ -82,31 +72,30 @@ int j = 0;
 		i++;
 	}
 	free(shell->auxilar);
-
-ft_clear(shell->env_param);	
-
-	// ft_clear(shell->lexer_res);
-	// free(shell->lexer_res);	
-	// free(shell->prompt);	// uncomment in final version
-
 }
 
 void	read_prompt(t_shell *shell)
 {
 	// shell->prompt = readline("get_curr_dirr>");
 	// shell->prompt = malloc(sizeof(char *) * (wrds_s_cnt(shell->prompt) + 1));	
-	// shell->prompt = malloc(sizeof(char) * 1000);	// TODO
-	// shell->prompt = " 123 a>b 555555555555666666| a=b 123 555555555555666666| fgh"; 
-	shell->prompt = "echo ls>>bs $a $$ as 1| wc -l | exp<<ort a=abs"; 
+	// shell->prompt = "|"; 
+	// shell->prompt = "echo ls>>bs $a $$ as 1| wc -l | exp<<ort a=abs"; 
 	// shell->prompt = "\'echo abs>$a$|no$a2$\'1|\"wc -l\"| export a=abs"; 	
-	// shell->prompt = "\"echo a>bs$a$|no$a2 $\"1|\"wc -l\"| export a=abs"; 
-	// shell->prompt = "echo ls > 35 $  | test add sth > > sth1 | asd 123"; 	
-		// shell->prompt = "echo h < asddff";	
+	shell->prompt = "\"echo a>bs$a$|no$a2 $\"1|\"wc -l\"| export a=abs"; 
+	// shell->prompt = "echo ls << << 35 $  | test add sth << sth1     | asd < 123"; 	
+	// shell->prompt = "echo ls >> >> 35 $  | test add sth > sth1 | asd >> 123"; 		
+	// shell->prompt = "echo ls > > 35 $  | test add sth > sth1 | asd 123 "; 		
+		// shell->prompt = "echo 123 $a dfg | sth";	
+		// shell->lexer_res = malloc(sizeof(char *) * (ft_strlen(shell->prompt) + 1));
+
+
 } 
+
+
 
 int	is_sp_sim(char ch)
 {
-	const char	*special_simbols = "|>< \t\n"; // $ not here
+	const char	*special_simbols = "|>< \t\n";
 	int cnt;
 
 	cnt = 0;
@@ -139,7 +128,6 @@ void	first_part_wwd(t_dolar	*wwd, int i)
 {
 	wwd->save_pos = malloc(sizeof(char) * ft_strlen(wwd->tlr[i]));
 	wwd->s_p_cnt = 0;
-	printf("%d %s;\n",i, wwd->tlr[i]);	//	delete
 	wwd->d_pos = char_srch(wwd->tlr[i], '$');	
 }
 
@@ -159,11 +147,27 @@ void	second_part_wwd(t_dolar	*wwd, int i,  t_shell *shell)
 	if (wwd->key[0] == '?')
 		wwd->value = ft_itoa(shell->last_comm_ret);
 	else
-		wwd->value = env_get_value(shell->env_param, wwd->key);		
-	free(wwd->key);			
+		wwd->value = env_get_value(shell->env_param, wwd->key);
+	free(wwd->key);	
 }
 
-void	third_part_wwd(t_dolar	*wwd, int i)
+int	dlr_mlc(t_shell *shell)
+{
+	int	res;
+	int	i;
+	int	max;
+
+	i = -1;
+	max = 0;
+	while (shell->env_param[++i])
+		if (ft_strlen(shell->env_param[i]) > max)
+			max = ft_strlen(shell->env_param[i]);
+	res = ft_strlen(shell->prompt) / 2;
+	res = res * max + 2;
+	return (res);
+}
+
+void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
 {
 	if (wwd->value != 0)
 		ft_strlcat(wwd->rs_st, wwd->value, ft_strlen(wwd->rs_st) + ft_strlen(wwd->value) + 1);
@@ -171,7 +175,7 @@ void	third_part_wwd(t_dolar	*wwd, int i)
 	ft_strlcat(wwd->rs_st, wwd->start, ft_strlen(wwd->rs_st) + ft_strlen(wwd->start) + 1);
 	free(wwd->start);
 	free(wwd->tlr[i]);
-	wwd->tlr[i] = malloc(sizeof(char) * 1024);
+	wwd->tlr[i] = malloc(sizeof(char) * dlr_mlc(shell));
 	ft_strlcpy(wwd->tlr[i], wwd->rs_st, ft_strlen(wwd->rs_st) + 1);	
 	wwd->d_pos = char_srch(wwd->rs_st, '$');
 }
@@ -184,7 +188,7 @@ void	work_with_dollar( t_shell *shell)
 
 	i = 0;
 	wwd.tlr = shell->lexer_res;	
-	wwd.rs_st = malloc(sizeof(char) * 1024);	// TODO	(save longest value * $cnt)
+	wwd.rs_st = malloc(sizeof(char) * dlr_mlc(shell));
 	while (wwd.tlr[i])
 	{
 		if ((wwd.tlr[i][0] == '\'') && (i++))
@@ -193,7 +197,7 @@ void	work_with_dollar( t_shell *shell)
 		while(wwd.d_pos != -1)
 		{
 			second_part_wwd(&wwd, i, shell);
-			third_part_wwd(&wwd, i);	
+			third_part_wwd(&wwd, i, shell);	
 		}
 		j = -1;
 		while (++j < wwd.s_p_cnt)
@@ -302,11 +306,38 @@ int	end_lexem(t_shell *shell, t_lexer	*lxr)
 			lxr->sng_qut = 0;
 		else if (str[cnt] == '\"')
 			lxr->dub_qut = 0;
-		// if ((str[cnt] == '\'') || (str[cnt] == '\"'))
-		// 	lxr->s_cnt++;	
-		res = 1;			
+		res = 1;
 	}
 	return (res);
+}
+
+int	check_two_pipes(t_shell *shell)
+{
+	int		i;
+	char	**tlr;
+
+	i = 0;
+	tlr = shell->lexer_res;	
+	while (tlr[i])
+	{
+		if ((tlr[0][0] == '|')  || ((tlr[0][0] == '>')
+			|| (tlr[0][0] == '<')) && (twodimarr_str_calc(tlr) == 1))
+			return (1);
+		if (tlr[i+1] != 0)
+		{
+			if ((tlr[i][0] == '|') && (tlr[i + 1][0] == '|'))
+				return (1);
+			if ((tlr[i][0] == '>' || tlr[i][0] == '<') && tlr[i + 1][0] == '|')
+				return (1);
+			if (((tlr[i][0] == '>') && (tlr[i + 1][0] == '<')) 
+				|| ((tlr[i][0] == '<') && (tlr[i + 1][0] == '>')) )
+				return (1);	
+		}
+		else if (tlr[i][0] == '>' || tlr[i][0] == '<' || tlr[i][0] == '|')
+			return (1);
+		i++;
+	}
+	return (0);
 }
 
 void	init_lexer(t_shell *shell, t_lexer	*lexer_st)
@@ -322,12 +353,13 @@ void	init_lexer(t_shell *shell, t_lexer	*lexer_st)
 	lexer_st->arr_lf_cnt = 0;
 }
 
-void	lexer(t_shell *shell)
+int	lexer(t_shell *shell)
 {
 	t_lexer	lexer_st;
 
+	shell->lexer_res = malloc(sizeof(char *) * (ft_strlen(shell->prompt) + 1));
 	init_lexer(shell, &lexer_st);
-		printf("%s\n", lexer_st.command);
+		// printf("%s\n", lexer_st.command);
 	while (is_space(shell->prompt[lexer_st.s_cnt]))
 		lexer_st.s_cnt++;
 	while (lexer_st.s_cnt <= ft_strlen(shell->prompt))
@@ -348,10 +380,11 @@ void	lexer(t_shell *shell)
 	shell->pipe_cnts = lexer_st.pipe_cnt;
 	shell->arr_cnts = lexer_st.arr_cnt;
 	shell->arr_lf_cnts = lexer_st.arr_lf_cnt;
-	// printf("word cnt=%d\n", lexer_st.l_cnt);
-	printf("pipe cnt=%d\n", lexer_st.pipe_cnt);
-	// work_with_dollar(&lexer_st, shell);
+	// printf("pipe cnt=%d\n", lexer_st.pipe_cnt);
 	work_with_dollar(shell);
+	if (check_two_pipes(shell))
+		return (1);
+	return (0);
 }
 
 void	run_shell(t_shell *shell)
@@ -379,41 +412,83 @@ void	run_shell(t_shell *shell)
 // 	envp[ind] = new_str;
 // }
 
+char	*ft_strrchr(const char *s, int c)
+{
+	size_t	i;
+
+	i = ft_strlen(s);
+	if (s[i] == (char)c)
+		return ((char *)&s[i]);
+	while (i--)
+	{
+		if (s[i] == (char)c)
+			return ((char *)&s[i]);
+	}
+	return ((char *)0);
+}
+
+void	remove_spaces(t_shell *shell)
+{
+	int const	num = shell->pipe_cnts + 1;
+	int			i;
+	int			j;
+	char		*space;
+
+	i = 0;
+	while (i < num)
+	{
+		j = 0;
+		while (shell->parser_res[i][j])
+		{
+			space = ft_strrchr(shell->parser_res[i][j], ' ');
+			if (space)
+				*space = 0;
+			j++;
+		}
+		i++;
+	}
+}
+
 void	checkleaks(void)
 {
-	system("leaks a.out");
+	system("leaks mh");
 }
 
 int main(int argc, char **argv, char **envp)
 {
-atexit(checkleaks);
+// atexit(checkleaks);
 
 	t_shell	shell;
 
 	(void)argc;
 	(void)argv;
-	(void)envp;
-	create_env(&shell, envp);
-
-	// run_shell(&shell);
-// env(&shell);	
-
-	read_prompt(&shell);
-	lexer(&shell);
 	int	i;
 	int j;
-	// // i = 0;
-	// // while (shell.lexer_res[i])
-	// // {
-	// // 	printf("%d %s;\n",i, shell.lexer_res[i]);
-	// // 	// fill_env_collection(new_shell, envp[i]);
-	// // 	i++;
-	// // }		
-	// // printf("\n");	
-	
+
+	create_env(&shell, envp);
+
+	// run_shell(&shell);	
+
+	read_prompt(&shell);
+	if (lexer(&shell))
+	{
+		printf("wrong input");
+		free_lexer(&shell);
+		// exit(1);
+		return (1);
+	}
+
+	// i = 0;
+	// while (shell.lexer_res[i])
+	// {
+	// 	printf("%d %s;\n",i, shell.lexer_res[i]);
+	// 	// fill_env_collection(new_shell, envp[i]);
+	// 	i++;
+	// }		
+	printf("\n");	
 	parser(&shell);
-	shell.auxilar = malloc(sizeof(t_pipex *) * shell.pipe_cnts + 1);
-	// printf("\n");
+	remove_spaces(&shell);	
+	shell.auxilar = malloc(sizeof(t_pipex *) * (shell.pipe_cnts + 2));
 	// i = 0;
 	// j = 0;
 	// while (shell.parser_res[i])
@@ -427,9 +502,7 @@ atexit(checkleaks);
 	// 	i++;
 	// }
 	// printf("\n");
-
 	post_parser(&shell);
-
 	i = 0;
 	j = 0;
 	while (shell.parser_res[i])
@@ -443,16 +516,16 @@ atexit(checkleaks);
 		i++;
 	}
 	printf("\n");	
-
 	i = 0;
-	while (i < 1)
+	while (i < shell.pipe_cnts + 1)
 	{
-		printf("input_fd %d \n",shell.auxilar[i]->input_fd);
-		printf("output_fd %d \n", shell.auxilar[i]->output_fd);
-		printf("is_exec %d \n",shell.auxilar[i]->is_exec);
+		printf("%d input_fd %d \n",i, shell.auxilar[i]->input_fd);
+		printf("%d output_fd %d \n",i, shell.auxilar[i]->output_fd);
+		printf("%d is_exec %d \n",i, shell.auxilar[i]->is_exec);
 		i++;
 	}	
 		printf("\n");	
+	
 
 	// env(&shell);
 
@@ -465,14 +538,14 @@ atexit(checkleaks);
 // // unset(&shell, "SECURITYSESSIONID=");
 // env(&shell);
 // // unset(&shell, "a=");
-export(&shell, "");
+// export(&shell, "");
 // export(&shell, "a=new_a2");
 // export(&shell, "a=new_a");
 // env(&shell);
 // unset(&shell, "a");
 // env(&shell);
 // env_get_value(shell.env_param, "a");
-	// printf("cmnd_cnt=%d\n", shell.cmnd_cnt);
+
 	close_env(&shell);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/27 20:39:44 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/02 16:28:56 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,14 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
+
+typedef struct PostParser
+{
+	int		*save_pos;
+	int		s_p_cnt;
+	char	**interim;
+	int		is_break;
+}	t_parser;
 
 typedef struct Dollar
 {
@@ -50,10 +58,6 @@ typedef struct Lexer
 typedef struct pipex
 {
 	int		pr_id;
-	// char	*input_fs;
-	// char	*output_fs;
-	// int		output_mod;
-	// int		fd_herdoc;
 	int		input_fd;
 	int		output_fd;
 	int		is_exec;
@@ -64,7 +68,7 @@ typedef struct Shell
 	char	**env_param;
 	char	**lexer_res;
 	char	*prompt;
-	int		cmnd_cnt; // amoun lexer array (now pipe_cnts+1)
+	// int		cmnd_cnt; // amoun lexer array (now pipe_cnts+1)
 	int		cont_wrk;
 	int		pipe_cnts;
 	int		arr_cnts;
@@ -84,6 +88,9 @@ char	*ft_substr(const char *s, unsigned int start, size_t len);
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
 // int		ft_atoi(const char *str);
 char	*ft_itoa(int n);
+int	ft_strcmp(const char *s1, const char *s2);
+void	ft_putchar_fd(char c, int fd);
+void	ft_putstr_fd(char *s, int fd);
 
 // wrk_w_envp
 char	*env_get_value(char **envp, char *key);

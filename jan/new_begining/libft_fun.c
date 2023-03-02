@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/16 16:35:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/02/25 14:49:27 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/01 15:51:06 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,4 +183,24 @@ char	*ft_itoa(int n)
 	}
 	res[len - cnt] = (wrk_int % 10) + '0';
 	return (res);
+}
+
+void	ft_putstr_fd(char *s, int fd)
+{
+	if (!s)
+		return ;
+	write(fd, s, ft_strlen(s));
+}
+
+void	ft_putchar_fd(char c, int fd)
+{
+	write(fd, &c, 1);
+}
+
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	while (*s1 == *s2++)
+		if (*s1++ == '\0')
+			return (0);
+	return (*(const unsigned char *)s1 - *(const unsigned char *)(s2 - 1));
 }
