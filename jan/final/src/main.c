@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/02 18:13:03 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/02 21:59:42 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -409,30 +409,51 @@ void	remove_spaces(t_shell *shell)
 	}
 }
 
-void	sigint_handler(int sig)
+int	process_running(t_shell *shell_p)
 {
-	(void)sig;
-	rl_on_new_line();
-    rl_replace_line("", 0);
-    rl_redisplay();
-	printf("\nminishell$ ");
+	static t_shell *shell;
+
+	if (!shell)
+		shell = shell_p;
+	return (!shell->cont_wrk);
 }
 
-void	sigquit_hander(int sig)
+void	sig_handler(int sig)
 {
-	(void)sig;
-	rl_redisplay();
+	if (sig == SIGINT)
+	{
+		if (process_running(NULL))
+			printf("\n");
+		else
+		{
+			rl_on_new_line();
+			rl_replace_line("", 0);
+			rl_redisplay();
+			printf("\nminishell$ ");
+		}
+	}
+	else if (sig == SIGQUIT)
+	{
+		if (process_running(NULL))
+			printf("Quit: 3\n");
+		else
+			rl_redisplay();
+	}
 }
+
 
 void	run_shell(t_shell *shell)
 {
 	struct termios term;
+	struct termios term_old;
 
-    tcgetattr(STDIN_FILENO, &term);
-    term.c_lflag &= ~(ECHOCTL);
-    tcsetattr(STDIN_FILENO, TCSANOW, &term);
-	signal(SIGINT, sigint_handler);
-	signal(SIGQUIT, sigquit_hander);
+	tcgetattr(STDIN_FILENO, &term_old);
+	tcgetattr(STDIN_FILENO, &term);
+	term.c_lflag &= ~(ECHOCTL);
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	process_running(shell);
+	signal(SIGINT, sig_handler);
+	signal(SIGQUIT, sig_handler);
 	while(1)
 	{
 		while (1)
@@ -441,6 +462,7 @@ void	run_shell(t_shell *shell)
 			if (!shell->prompt)
 			{
 				ft_clear(shell->env_param);
+				tcsetattr(STDIN_FILENO, TCSANOW, &term_old);
 				exit(EXIT_SUCCESS);
 			}
 			if (shell->prompt[0] != '\0')
@@ -459,11 +481,16 @@ void	run_shell(t_shell *shell)
 		remove_spaces(shell);
 		shell->auxilar = malloc(sizeof(t_pipex *) * (shell->pipe_cnts + 2));
 		post_parser(shell);
+		tcsetattr(STDIN_FILENO, TCSANOW, &term_old);
+		shell->cont_wrk = 0;
 		if (shell->pipe_cnts > 0)
 			pipex(shell);
 		else
 			execute(shell);
 		free(shell->prompt);
+		tcgetattr(STDIN_FILENO, &term_old);
+		tcsetattr(STDIN_FILENO, TCSANOW, &term);
+		shell->cont_wrk = 1;
 	}
 }
 
