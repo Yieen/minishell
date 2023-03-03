@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/03 11:44:01 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/03 13:01:53 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void	free_lexer(t_shell *shell)
 		i++;
 	}
 	free(shell->lexer_res);
-	ft_clear(shell->env_param);	
 }
 
 void	close_env(t_shell *shell)
@@ -58,6 +57,8 @@ void	close_env(t_shell *shell)
 	int	i;
 
 	free_lexer(shell);	
+	ft_clear(shell->env_param);	// move it from free_lexer
+
 	i = 0;
 	while (shell->parser_res[i])
 	{
@@ -175,13 +176,11 @@ void	run_shell(t_shell *shell)
 				break ;
 		}
 		add_history(shell->prompt);
-		// lexer(shell);
 		if (lexer(shell))
 		{
-			printf("wrong input");
+			printf("wrong input\n");
 			free_lexer(shell);
-			exit(1);
-			// return (1);
+			continue ;
 		}		
 		parser(shell);
 		remove_spaces(shell);
@@ -213,6 +212,5 @@ int main(int argc, char **argv, char **envp)
 	(void)argv;
 	create_env(&shell, envp);
 	run_shell(&shell);
+	// close_env(&shell);	
 }
-
-	// close_env(&shell);
