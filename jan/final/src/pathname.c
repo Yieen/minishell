@@ -6,36 +6,24 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/23 15:08:26 by jharrach          #+#    #+#             */
-/*   Updated: 2023/03/03 16:09:15 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/03 18:32:50 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-char	*ft_getenv(char *name, char **env)
-{
-	int	i;
-
-	if (!env)
-		return (NULL);
-	i = 0;
-	while (env[i])
-	{
-		if (ft_strcmp(env[i], name) == '=')
-			return (&env[i][ft_strlen(name) + 1]);
-		i++;
-	}
-	return (NULL);
-}
-
 static char	**get_paths(char **env)
 {
 	char	**paths;
+	char	*path_value;
 
-	paths = ft_split(ft_getenv("PATH", env), ':');
+	path_value = env_get_value(env, "PATH");
+	if (!path_value)
+		return (NULL);
+	paths = ft_split(path_value, ':');
 	if (!paths)
 	{
-		perror(PROG_NAME);
+		perror(PROG_NAME ": ft_split()");
 		exit(EXIT_FAILURE);
 	}
 	return (paths);
@@ -70,20 +58,23 @@ char	*search_pathname(char *name, char **env)
 	char	*pathname;
 
 	paths = get_paths(env);
-	while (*paths)
+	if (paths)
 	{
-		pathname = create_pathname(*paths++, name);
-		if (access(pathname, F_OK) != 0)
+		while (*paths)
 		{
-			free(pathname);
-			continue ;
+			pathname = create_pathname(*paths++, name);
+			if (access(pathname, F_OK) != 0)
+			{
+				free(pathname);
+				continue ;
+			}
+			if (access(pathname, X_OK) != 0)
+			{
+				perror(pathname);
+				exit(EXIT_FAILURE);
+			}
+			return (pathname);
 		}
-		if (access(pathname, X_OK) != 0)
-		{
-			perror(pathname);
-			exit(EXIT_FAILURE);
-		}
-		return (pathname);
 	}
 	ft_putstr_fd(name, STDERR_FILENO);
 	ft_putstr_fd(": command not found\n", STDERR_FILENO);
