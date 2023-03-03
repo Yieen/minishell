@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/02 18:14:44 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/03 11:42:58 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,26 @@ int		b_exit(t_shell *shell, int i);
 int		b_env(t_shell *shell, int i);
 int		b_export(t_shell *shell, int i);
 int		b_unset(t_shell *shell, int i);
+
+// lexer
+int	work_pipe_or_ec(t_shell *shell, t_lexer	*lxr);
+int	is_space(char ch);
+int	is_sp_sim(char ch);
+int	find_end_key(char *str, int st);
+
+// lexer2
+int	start_new_lexem(t_shell *shell, t_lexer	*lxr);
+int	end_lexem(t_shell *shell, t_lexer	*lxr);
+int	check_two_pipes(t_shell *shell);
+void	init_lexer(t_shell *shell, t_lexer	*lexer_st);
+int	lexer(t_shell *shell);
+
+// work with dollar
+void	first_part_wwd(t_dolar	*wwd, int i);
+void	second_part_wwd(t_dolar	*wwd, int i,  t_shell *shell);
+int		dlr_mlc(t_shell *shell);
+void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
+void	work_with_dollar( t_shell *shell);
 
 #endif
 
