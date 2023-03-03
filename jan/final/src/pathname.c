@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/23 15:08:26 by jharrach          #+#    #+#             */
-/*   Updated: 2023/02/27 16:37:44 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/03 16:09:15 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static char	**get_paths(char **env)
 	paths = ft_split(ft_getenv("PATH", env), ':');
 	if (!paths)
 	{
-		perror("minishell");
+		perror(PROG_NAME);
 		exit(EXIT_FAILURE);
 	}
 	return (paths);
@@ -50,7 +50,7 @@ static char	*create_pathname(char *path, char *name)
 	free(path);
 	if (!pathname)
 	{
-		perror("minishell");
+		perror(PROG_NAME ": ft_strjoin()");
 		exit(EXIT_FAILURE);
 	}
 	tmp = pathname;
@@ -58,7 +58,7 @@ static char	*create_pathname(char *path, char *name)
 	free(tmp);
 	if (!pathname)
 	{
-		perror("minishell");
+		perror(PROG_NAME ": ft_strjoin()");
 		exit(EXIT_FAILURE);
 	}
 	return (pathname);
@@ -68,7 +68,6 @@ char	*search_pathname(char *name, char **env)
 {
 	char	**paths;
 	char	*pathname;
-	char	*tmp;
 
 	paths = get_paths(env);
 	while (*paths)
@@ -86,16 +85,18 @@ char	*search_pathname(char *name, char **env)
 		}
 		return (pathname);
 	}
-	ft_dprintf(STDERR_FILENO, "minishell: %s: command not found\n", name);
+	ft_putstr_fd(name, STDERR_FILENO);
+	ft_putstr_fd(": command not found\n", STDERR_FILENO);
 	exit(EXIT_FAILURE);
 }
 
 static void	check_buildings(t_shell *shell, int i)
 {
-	char const	buildin[][10] = \
+	char const		buildin[][10] = \
 		{"echo", "pwd", "cd", "exit", "export", "unset", "env"};
-	t_buildin const b_func[] = {b_echo, b_pwd, b_cd, b_exit, b_export, b_unset, b_env};
-	int			j;
+	t_buildin const	b_func[] = \
+		{b_echo, b_pwd, b_cd, b_exit, b_export, b_unset, b_env};
+	int				j;
 
 	j = 0;
 	while (j < 7)
@@ -108,25 +109,23 @@ static void	check_buildings(t_shell *shell, int i)
 
 char	*get_pathname(t_shell *shell, int i)
 {
-	char *const	*argv = shell->parser_res[i];
-
-	if (ft_strchr(argv[0], '/') == 0)
+	if (ft_strchr(shell->parser_res[i][0], '/') == 0)
 	{
 		check_buildings(shell, i);
-		return (search_pathname(argv[0], shell->env_param));
+		return (search_pathname(shell->parser_res[i][0], shell->env_param));
 	}
 	else
 	{
-		if (access(argv[0], F_OK) != 0)
+		if (access(shell->parser_res[i][0], F_OK) != 0)
 		{
-			perror(argv[0]);
+			perror(shell->parser_res[i][0]);
 			exit(EXIT_FAILURE);
 		}
-		if (access(argv[0], X_OK) != 0)
+		if (access(shell->parser_res[i][0], X_OK) != 0)
 		{
-			perror(argv[0]);
+			perror(shell->parser_res[i][0]);
 			exit(EXIT_FAILURE);
 		}
-		return (argv[0]);
+		return (shell->parser_res[i][0]);
 	}
 }

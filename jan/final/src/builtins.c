@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:07:06 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/02 18:19:24 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/03 14:44:02 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,12 @@ void	unset(t_shell *shell, char *new_str)
 
 int	b_unset(t_shell *shell, int i)
 {
-	if (shell->parser_res[i][1])
-		unset(shell, shell->parser_res[i][1]);
-	return (EXIT_FAILURE);
+	int	j;
+
+	j = 1;
+	while (shell->parser_res[i][j])
+		unset(shell, shell->parser_res[i][j++]);
+	return (EXIT_SUCCESS);
 }
 
 void	ft_clear(char	**lsttclear)
@@ -103,10 +106,13 @@ int	export(t_shell *shell, char *new_str)
 	if ((new_str == 0) || (new_str[0] == '\0'))
 	{
 		export_env(shell);
-		return (1);
+		return (EXIT_SUCCESS);
 	}
 	if (!check_key(new_str, char_srch(new_str, '=')))
-		return (0);
+	{
+		printf("wrong input\n");
+		return (EXIT_FAILURE);
+	}
 	temp = cut_equ(new_str);
 	env_ind = pos_into_env(shell->env_param, temp);
 	if (env_ind == -1)
@@ -119,24 +125,18 @@ int	export(t_shell *shell, char *new_str)
 		ft_strlcpy(shell->env_param[env_ind], new_str, ft_strlen(new_str) + 1);
 	}
 	free(temp);
-	return (1);
+	return (EXIT_SUCCESS);
 }
 
 int	b_export(t_shell *shell, int i)
 {
-	if (shell->parser_res[i][1])
+	int	ret;
+	int	j;
+
+	if (!shell->parser_res[i][1])
 		return (export(shell, shell->parser_res[i][1]));
-	else
-		return (EXIT_FAILURE);
-}
-
-void	env(t_shell *shell)
-{
-	int	i;
-
-	i = -1;
-	while (shell->env_param[++i])
-	{
-		printf("%s\n", shell->env_param[i]);
-	}	
+	j = 1;
+	while (shell->parser_res[i][j])
+		ret = export(shell, shell->parser_res[i][j++]);
+	return (ret);
 }
