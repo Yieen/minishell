@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   work_with_dollar.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:37:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/03 12:21:13 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/04 16:50:33 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	dlr_mlc(t_shell *shell)
 	i = -1;
 	max = 0;
 	while (shell->env_param[++i])
-		if (ft_strlen(shell->env_param[i]) > max)
+		if ((int)ft_strlen(shell->env_param[i]) > max)
 			max = ft_strlen(shell->env_param[i]);
 	res = ft_strlen(shell->prompt) / 2;
 	res = res * max + 2;

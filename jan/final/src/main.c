@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/03 13:01:53 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/04 17:18:42 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void	sig_handler(int sig)
 			rl_on_new_line();
 			rl_replace_line("", 0);
 			rl_redisplay();
-			printf("\nminishell$ ");
+			printf("\n" PROMPT);
 		}
 	}
 	else if (sig == SIGQUIT)
@@ -165,7 +165,7 @@ void	run_shell(t_shell *shell)
 	{
 		while (1)
 		{
-			shell->prompt = readline("minishell$ ");
+			shell->prompt = readline(PROMPT);
 			if (!shell->prompt)
 			{
 				ft_clear(shell->env_param);

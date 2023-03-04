@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   lexer2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:40:21 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/03 13:03:34 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/04 17:22:07 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int	start_new_lexem(t_shell *shell, t_lexer	*lxr)
+int	start_new_lexem(t_lexer	*lxr)
 {
 	char	*str;
 	int		cnt;
@@ -33,7 +33,7 @@ int	start_new_lexem(t_shell *shell, t_lexer	*lxr)
 	return (res);
 }
 
-int	end_lexem(t_shell *shell, t_lexer	*lxr)
+int	end_lexem(t_lexer *lxr)
 {
 	char	*str;
 	int		cnt;
@@ -67,8 +67,8 @@ int	check_two_pipes(t_shell *shell)
 	tlr = shell->lexer_res;
 	while (tlr[i])
 	{
-		if ((tlr[0][0] == '|') || ((tlr[0][0] == '>')
-			|| (tlr[0][0] == '<')) && (twodimarr_str_calc(tlr) == 1))
+		if ((tlr[0][0] == '|' || tlr[0][0] == '>' || tlr[0][0] == '<')
+			&& twodimarr_str_calc(tlr) == 1)
 			return (1);
 		if (tlr[i + 1] != 0)
 		{
@@ -120,14 +120,14 @@ int	lexer(t_shell *shell)
 	init_lexer(shell, &lr);
 	while (is_space(shell->prompt[lr.s_cnt]))
 		lr.s_cnt++;
-	while (lr.s_cnt <= ft_strlen(shell->prompt))
+	while (lr.s_cnt <= (int)ft_strlen(shell->prompt))
 	{
 		if ((shell->prompt[lr.s_cnt] == '|') || (shell->prompt[lr.s_cnt] == '>')
 			|| (shell->prompt[lr.s_cnt] == '<'))
 			work_pipe_or_ec(shell, &lr);
-		else if (start_new_lexem(shell, &lr))
+		else if (start_new_lexem(&lr))
 			lr.st_nlm = lr.s_cnt;
-		else if (end_lexem(shell, &lr))
+		else if (end_lexem(&lr))
 		{
 			shell->lexer_res[lr.l_cnt] = ft_substr(shell->prompt,
 					lr.st_nlm, (lr.s_cnt - lr.st_nlm + 1));

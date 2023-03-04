@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/03 11:42:58 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/04 17:20:54 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,9 @@
 # include "../libft/include/libft.h"
 # include <termios.h>
 
-# define PROG_NAME "minishell"
-# define PWD_BUF_SIZE 1024
+# define PROMPT			"minishell$ "
+# define PROG_NAME		"minishell"
+# define PWD_BUF_SIZE	1024
 
 typedef struct PostParser
 {
@@ -57,9 +58,9 @@ typedef struct pipex
 
 typedef struct Lexer
 {
-	int		s_cnt;	// counter for string
-	int		l_cnt;	// new word (lexem) counter
-	int		st_nlm;	// start nem lexem
+	int		s_cnt;
+	int		l_cnt;
+	int		st_nlm;
 	int		pipe_cnt;
 	int		arr_cnt;
 	int		arr_lf_cnt;
@@ -74,7 +75,6 @@ typedef struct Shell
 	char	**env_param;
 	char	**lexer_res;
 	char	*prompt;
-	int		cmnd_cnt; // amoun lexer array (now pipe_cnts+1)
 	int		cont_wrk;
 	int		pipe_cnts;
 	int		arr_cnts;
@@ -91,7 +91,7 @@ int		twodimarr_str_calc(char **arr);
 char	*cut_equ(char *wrk_str);
 int		char_srch(char *str, char ch);
 char	**del_ind_fr_array(char **src, int size, int del_i);
-char	**copy_string_array(char **src, int size) ;
+char	**copy_string_array(char **src, int size);
 
 // builtins
 void	unset(t_shell *shell, char *new_str);
@@ -106,7 +106,7 @@ void	parser(t_shell *shell);
 void	post_parser(t_shell *shell);
 
 // main
-int	is_sp_sim(char ch);
+int		is_sp_sim(char ch);
 
 void	pipex(t_shell *shell);
 void	execute(t_shell *shell);
@@ -114,8 +114,8 @@ char	*ft_getenv(char *name, char **env);
 char	*search_pathname(char *name, char **env);
 char	*get_pathname(t_shell *shell, int i);
 
-
 typedef int	(*t_buildin)(t_shell *, int);
+
 int		b_echo(t_shell *shell, int i);
 int		b_pwd(t_shell *shell, int i);
 int		b_cd(t_shell *shell, int i);
@@ -125,21 +125,21 @@ int		b_export(t_shell *shell, int i);
 int		b_unset(t_shell *shell, int i);
 
 // lexer
-int	work_pipe_or_ec(t_shell *shell, t_lexer	*lxr);
-int	is_space(char ch);
-int	is_sp_sim(char ch);
-int	find_end_key(char *str, int st);
+int		work_pipe_or_ec(t_shell *shell, t_lexer	*lxr);
+int		is_space(char ch);
+int		is_sp_sim(char ch);
+int		find_end_key(char *str, int st);
 
 // lexer2
-int	start_new_lexem(t_shell *shell, t_lexer	*lxr);
-int	end_lexem(t_shell *shell, t_lexer	*lxr);
-int	check_two_pipes(t_shell *shell);
+int		start_new_lexem(t_lexer	*lxr);
+int		end_lexem(t_lexer	*lxr);
+int		check_two_pipes(t_shell *shell);
 void	init_lexer(t_shell *shell, t_lexer	*lexer_st);
-int	lexer(t_shell *shell);
+int		lexer(t_shell *shell);
 
 // work with dollar
 void	first_part_wwd(t_dolar	*wwd, int i);
-void	second_part_wwd(t_dolar	*wwd, int i,  t_shell *shell);
+void	second_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
 int		dlr_mlc(t_shell *shell);
 void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
 void	work_with_dollar( t_shell *shell);
