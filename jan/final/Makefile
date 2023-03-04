@@ -3,12 +3,18 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+         #
+#    By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/07 22:00:28 by jharrach          #+#    #+#              #
-#    Updated: 2023/03/03 11:53:36 by inovomli         ###   ########.fr        #
+#    Updated: 2023/03/04 16:58:20 by jharrach         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+# readline installation:
+# 	cd ~ && mkdir ./homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+# 	echo 'PATH="$HOME/homebrew/bin:$PATH"' >> ~/.bash_profile
+# 	echo 'PATH="$HOME/homebrew/bin:$PATH"' >> ~/.zshrc
+# 	brew install readline
 
 NAME		= minishell
 
@@ -19,18 +25,18 @@ OBJ_DIR		= obj/
 
 OBJ			+= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_NAME)))
 
-# CFLAGS		= -Wall -Wextra -Werror
-CFLAGS		= -I$(shell brew --prefix readline)/include
+CFLAGS		= -Wall -Wextra -Werror -I$(shell brew --prefix readline)/include
+LDFLAGS		= -L$(shell brew --prefix readline)/lib/ -lreadline
 
 LIBFT_NAME	= libft.a
 LIBFT_DIR	= libft/
 LIBFT		= $(addprefix $(LIBFT_DIR), $(LIBFT_NAME))
 
 all: $(NAME)
-# "$(shell brew --prefix readline)/lib/"
+
 $(NAME): $(OBJ)
 	@$(MAKE) -C $(LIBFT_DIR) | sed -e 's/^/libft-> /;'
-	@$(CC) $(CFLAGS) -lreadline -L $(shell brew --prefix readline)/lib/ $^ $(LIBFT) -o $@
+	@$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LIBFT) -o $@
 	@echo "make: $@"
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | objdir
