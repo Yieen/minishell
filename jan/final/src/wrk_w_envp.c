@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   wrk_w_envp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 15:50:40 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/02 18:05:19 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/06 17:08:43 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,9 @@ int	pos_into_env(char **envp, char *srch_str)
 	{
 		if ((ft_strnstr(envp[res], srch_str, len) == envp[res])
 			&& (envp[res][len] == '='))
+			return (res);
+		if ((ft_strnstr(envp[res], srch_str, len) == envp[res])
+			&& (envp[res][len] == '\0'))
 			return (res);
 	}	
 	return (-1);

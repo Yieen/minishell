@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:40:21 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/04 17:22:07 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/06 17:42:12 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,32 @@ int	end_lexem(t_lexer *lxr)
 	if ((lxr->st_nlm >= 0) && (is_sp_sim(str[cnt])
 			|| (str[cnt] == '\'') || (str[cnt] == '\"')))
 	{
+		if ((lxr->sng_qut == 0) && (str[cnt] == '\''))
+		{
+			lxr->s_cnt--;
+			return (1);
+		}
+		if ((lxr->dub_qut == 0) && (str[cnt] == '\"'))
+		{
+			lxr->s_cnt--;
+			return (1);
+		}		
+		// !!!
 		if ((lxr->sng_qut == 1) && (str[cnt] != '\''))
-			return (res);
+			return (0);
 		else if ((lxr->dub_qut == 1) && (str[cnt] != '\"'))
-			return (res);
+			return (0);
+			// !!!
 		if (str[cnt] == '\'')
 			lxr->sng_qut = 0;
 		else if (str[cnt] == '\"')
 			lxr->dub_qut = 0;
 		res = 1;
+
+		// if ((str[cnt] == '\'') || (str[cnt] == '\"'))
+		// 	lxr->s_cnt++;	
+
+
 	}
 	return (res);
 }
@@ -102,11 +119,16 @@ void	init_lexer(t_shell *shell, t_lexer	*lexer_st)
 
 int	lexer_end(t_shell *shell, t_lexer *lr)
 {
+	
 	shell->lexer_res[lr->l_cnt] = 0;
 	shell->pipe_cnts = lr->pipe_cnt;
 	shell->arr_cnts = lr->arr_cnt;
 	shell->arr_lf_cnts = lr->arr_lf_cnt;
+	// write(1,"8\n",2);	
 	work_with_dollar(shell);
+		// write(1,"7\n",2);
+	if (lr->l_cnt == 0)
+		return (2);
 	if (check_two_pipes(shell))
 		return (1);
 	return (0);
@@ -132,7 +154,7 @@ int	lexer(t_shell *shell)
 			shell->lexer_res[lr.l_cnt] = ft_substr(shell->prompt,
 					lr.st_nlm, (lr.s_cnt - lr.st_nlm + 1));
 			lr.l_cnt++;
-			lr.st_nlm = -1;
+			lr.st_nlm = -1;			
 		}
 		lr.s_cnt++;
 	}

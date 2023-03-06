@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   work_with_dollar.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:37:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/04 16:50:33 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/06 17:42:23 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	work_with_dollar( t_shell *shell)
 	wwd.rs_st = malloc(sizeof(char) * dlr_mlc(shell));
 	while (wwd.tlr[i])
 	{
-		if ((wwd.tlr[i][0] == '\'') && (i++))
+		if ((wwd.tlr[i][0] == '\'')  && (++i))
 			continue ;
 		first_part_wwd(&wwd, i);
 		while (wwd.d_pos != -1)

@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:06:25 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/03 12:13:27 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/06 18:33:14 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	locate_parser_mem(t_shell *shell)
 	while (i < shell->pipe_cnts + 2)
 	{
 		shell->parser_res[i] = (char **) malloc(sizeof(char *)
-				* (ft_strlen(shell->prompt) + 1));
+				* (ft_strlen(shell->prompt) + 2));
 		i++;
 	}
 }
@@ -74,7 +74,7 @@ int	here_doc(char *delimiter)
 	}
 }
 
-char	**del_elms_fr_array(char **src, int size, int *del_arr)
+char	**del_elms_fr_array(char **src, int size, int *del_arr, t_parser *pp)
 {
 	int		i;
 	char	**dest;
@@ -89,8 +89,8 @@ char	**del_elms_fr_array(char **src, int size, int *del_arr)
 	{
 		j = 0;
 		copy = 1;
-		while (del_arr[j])
-		{
+		while(j < pp->s_p_cnt)
+		{				
 			if (i == del_arr[j])
 				copy = 0;
 			j++;
@@ -140,7 +140,7 @@ void	two_left_arrow(t_shell *shell, t_parser *pp, int i, int j)
 			close(shell->auxilar[i]->input_fd);
 		if (!is_sp_sim(shell->parser_res[i][j + 1][0]))
 		{
-			shell->auxilar[i]->output_fd
+			shell->auxilar[i]->input_fd
 				= here_doc(shell->parser_res[i][j + 1]);
 			if ((shell->auxilar[i]->input_fd == -1)
 				|| (is_sp_sim(shell->parser_res[i][j + 1][0])))
@@ -148,7 +148,7 @@ void	two_left_arrow(t_shell *shell, t_parser *pp, int i, int j)
 				ft_putstr_fd("minishell: ", STDERR_FILENO);
 				perror(shell->parser_res[i][j + 1]);
 				shell->auxilar[i]->is_exec = 0;
-			}						
+			}				
 			pp->save_pos[pp->s_p_cnt] = j;
 			pp->save_pos[pp->s_p_cnt + 1] = j + 1;
 			pp->s_p_cnt += 2;
@@ -274,7 +274,7 @@ void	post_parser(t_shell *shell)
 		}
 		pp.save_pos[pp.s_p_cnt] = 0;
 		pp.interim = del_elms_fr_array(shell->parser_res[i],
-				twodimarr_str_calc(shell->parser_res[i]), pp.save_pos);
+				twodimarr_str_calc(shell->parser_res[i]), pp.save_pos, &pp);
 		free(shell->parser_res[i]);
 		shell->parser_res[i] = pp.interim;
 		i++;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:07:06 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/03 14:44:02 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/06 13:20:13 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,12 @@ void	export_env(t_shell *shell)
 	}	
 }
 
+int	norm_add()
+{
+	printf("wrong input\n");
+	return (EXIT_FAILURE);	
+}
+
 int	export(t_shell *shell, char *new_str)
 {
 	int		env_ind;
@@ -109,10 +115,7 @@ int	export(t_shell *shell, char *new_str)
 		return (EXIT_SUCCESS);
 	}
 	if (!check_key(new_str, char_srch(new_str, '=')))
-	{
-		printf("wrong input\n");
-		return (EXIT_FAILURE);
-	}
+		return (norm_add());
 	temp = cut_equ(new_str);
 	env_ind = pos_into_env(shell->env_param, temp);
 	if (env_ind == -1)

@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:16:00 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/03 12:38:32 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/06 17:39:44 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	wrk_pipeor_sh(t_shell *shell, t_lexer	*lxr, char *str, int cnt)
 			shell->lexer_res[lxr->l_cnt] = "<<";
 			lxr->s_cnt++;
 		}
-		else if (lxr->arr_lf_cnt++)
+		else if (++lxr->arr_lf_cnt)
 			shell->lexer_res[lxr->l_cnt] = "<";
 	}	
 }
@@ -97,7 +97,8 @@ int	find_end_key(char *str, int st)
 	{
 		if (str[st] == '?')
 			return (st);
-		if (is_sp_sim(str[st]) || (str[st] == '$'))
+		if (is_sp_sim(str[st]) || (str[st] == '$')
+			|| (str[st] == '\"') || (str[st] == '\''))
 			return (st - 1);
 		st++;
 	}

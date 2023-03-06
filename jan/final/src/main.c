@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/04 17:18:42 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/06 18:32:20 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	remove_spaces(t_shell *shell)
 	int const	num = shell->pipe_cnts + 1;
 	int			i;
 	int			j;
-	char		*space;
+	int cnt;
 
 	i = 0;
 	while (i < num)
@@ -107,9 +107,52 @@ void	remove_spaces(t_shell *shell)
 		j = 0;
 		while (shell->parser_res[i][j])
 		{
-			space = ft_strrchr(shell->parser_res[i][j], ' ');
-			if (space)
-				*space = 0;
+			cnt = 0;
+			while(shell->parser_res[i][j][cnt])
+				cnt++;
+			if (shell->parser_res[i][j][cnt - 1] == ' ')
+				shell->parser_res[i][j][cnt - 1] = 0;
+			if (shell->parser_res[i][j][cnt - 1] == '\t')
+				shell->parser_res[i][j][cnt - 1] = 0;
+			j++;
+		}
+		i++;
+	}
+}
+
+void	del_first_last(char *str)
+{
+	int len;
+	int i;
+
+	i = 0;
+	len = ft_strlen(str);
+	while(i < len - 2)
+	{
+		str[i] = str[i + 1];
+		i++;
+	}
+	str[i] = 0;
+}
+
+void	remove_quotes(t_shell *shell)
+{
+	int const	num = shell->pipe_cnts + 1;
+	int			i;
+	int			j;
+	int cnt;
+
+	i = 0;
+	while (i < num)
+	{
+		j = 0;
+		while (shell->parser_res[i][j])
+		{
+			cnt = 0;
+			while(shell->parser_res[i][j][cnt])
+				cnt++;
+			if ((shell->parser_res[i][j][0] == '\"') && (shell->parser_res[i][j][cnt - 1] == '\"'))
+				del_first_last(shell->parser_res[i][j]);
 			j++;
 		}
 		i++;
@@ -151,9 +194,10 @@ void	sig_handler(int sig)
 
 void	run_shell(t_shell *shell)
 {
+	// int i;
+
 	struct termios term;
 	struct termios term_old;
-
 	tcgetattr(STDIN_FILENO, &term_old);
 	tcgetattr(STDIN_FILENO, &term);
 	term.c_lflag &= ~(ECHOCTL);
@@ -176,22 +220,60 @@ void	run_shell(t_shell *shell)
 				break ;
 		}
 		add_history(shell->prompt);
+			// write(1,"0\n",2);	
 		if (lexer(shell))
 		{
-			printf("wrong input\n");
+			if (lexer(shell) == 1)
+				printf("wrong input\n");
 			free_lexer(shell);
 			continue ;
-		}		
+		}	
+
+	// i = 0;
+	// while (shell->lexer_res[i])
+	// {
+	// 	printf("%d %s;\n",i, shell->lexer_res[i]);
+
+	// 	i++;
+	// }
+
 		parser(shell);
+
+// write(1,"1\n", 2);
+	// i = 0;
+	// while (shell->parser_res[0][i])
+	// {
+	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
+
+	// 	i++;
+	// }
+
 		remove_spaces(shell);
+		remove_quotes(shell);
 		shell->auxilar = malloc(sizeof(t_pipex *) * (shell->pipe_cnts + 2));
-		post_parser(shell);
-		tcsetattr(STDIN_FILENO, TCSANOW, &term_old);
+		post_parser(shell);	
+		// write(1,"7\n", 2);
+		if (shell->parser_res[0][0] == 0)	
+		{
+			free_lexer(shell);
+			free(shell->parser_res);
+			continue ;
+		}
+	// i = 0;
+	// while (shell->parser_res[0][i])
+	// {
+	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
+
+	// 	i++;
+	// }
+
+
+		tcsetattr(STDIN_FILENO, TCSANOW, &term_old);		
 		shell->cont_wrk = 0;
 		if (shell->pipe_cnts > 0)
 			pipex(shell);
 		else
-			execute(shell);
+			execute(shell);	
 		free(shell->prompt);
 		tcgetattr(STDIN_FILENO, &term_old);
 		tcsetattr(STDIN_FILENO, TCSANOW, &term);
@@ -203,6 +285,8 @@ void	run_shell(t_shell *shell)
 // {
 // 	envp[ind] = new_str;
 // }
+
+// 'echo $USER'
 
 int main(int argc, char **argv, char **envp)
 {
