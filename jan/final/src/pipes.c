@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 14:01:51 by jharrach          #+#    #+#             */
-/*   Updated: 2023/03/03 16:35:33 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/06 20:48:27 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static void	pipex_child(t_shell *shell, int fd[2][2], int i)
 {
 	pipex_child_input_fd(shell, fd, i);
 	pipex_child_output_fd(shell, fd, i);
-	execve(get_pathname(shell, i), shell->parser_res[i], shell->env_param);
+	execve(get_pathname(shell, i), shell->parser_res[i], remove_empty_var(shell));
 	perror(shell->parser_res[i][0]);
 	exit(EXIT_FAILURE);
 }
