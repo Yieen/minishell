@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 17:02:44 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 17:08:43 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ void	remove_quotes(t_shell *shell)
 				cnt++;
 			if ((shell->parser_res[i][j][dp] == '\"') && (shell->parser_res[i][j][cnt - 1] == '\"'))
 				del_n_last(shell->parser_res[i][j], dp);
-			if ((shell->parser_res[i][j][sp] == '\'') && (shell->parser_res[i][j][cnt - 1] == '\''))
+			else if ((shell->parser_res[i][j][sp] == '\'') && (shell->parser_res[i][j][cnt - 1] == '\''))
 				del_n_last(shell->parser_res[i][j], sp);				
 			j++;
 		}
