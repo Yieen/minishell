@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 12:43:50 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 14:25:01 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,8 @@ void	work_with_dollar( t_shell *shell);
 
 char	**remove_empty_var(t_shell *shell);
 char	*b_get_pwd(void);
+
+void	del_n_last(char *str, int del);
 
 #endif
 
