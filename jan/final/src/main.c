@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 16:33:27 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 17:02:44 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,6 +217,7 @@ void	combine_str(char ***prr)
 			if ((prr[i][j + 1] != 0) && ((prr[i][j + 1][0] == '\"') || (prr[i][j + 1][0] == '\''))
 				&& (prr[i][j][ft_strlen(prr[i][j]) - 1] != ' ') 
 				&& (prr[i][j][0] != '<') && (prr[i][j][0] != '>')
+				&& !(((prr[i][j][ft_strlen(prr[i][j]) - 1] == '\'') && (prr[i][j + 1][0] == '\"')) || ((prr[i][j][ft_strlen(prr[i][j]) - 1] == '\"') && (prr[i][j + 1][0] == '\'')))
 				&& (prr[i][j][ft_strlen(prr[i][j]) - 1] != (prr[i][j + 1][0])))
 			{
 				ft_strlcat(prr[i][j], prr[i][j + 1],
@@ -344,51 +345,90 @@ void	run_shell(t_shell *shell)
 			continue ;
 		}	
 
-	i = 0;
-	while (shell->lexer_res[i])
-	{
-		printf("%d %s;\n",i, shell->lexer_res[i]);
-		i++;
-	}	
-	printf("\n");
+	// i = 0;
+	// while (shell->lexer_res[i])
+	// {
+	// 	printf("%d %s;\n",i, shell->lexer_res[i]);
+	// 	i++;
+	// }	
+	// printf("\n");
 
 		parser(shell);
+	// i = 0;
+	// j = 0;
+	// while (shell->parser_res[i])
+	// {
+	// 	while (shell->parser_res[i][j] != 0)
+	// 	{
+	// 		printf("%d %d %s;\n",i,j, shell->parser_res[i][j]);
+	// 		j++;
+	// 	}
+	// 	j = 0;
+	// 	i++;
+	// }
+	// printf("\n");
 
 		combine_str(shell->parser_res);
+	// i = 0;
+	// j = 0;
+	// while (shell->parser_res[i])
+	// {
+	// 	while (shell->parser_res[i][j] != 0)
+	// 	{
+	// 		printf("%d %d %s;\n",i,j, shell->parser_res[i][j]);
+	// 		j++;
+	// 	}
+	// 	j = 0;
+	// 	i++;
+	// }
+	// printf("\n");		
 		combine_str2(shell->parser_res);		
+	// i = 0;
+	// j = 0;
+	// while (shell->parser_res[i])
+	// {
+	// 	while (shell->parser_res[i][j] != 0)
+	// 	{
+	// 		printf("%d %d %s;\n",i,j, shell->parser_res[i][j]);
+	// 		j++;
+	// 	}
+	// 	j = 0;
+	// 	i++;
+	// }
+	// printf("\n");		
 		remove_spaces(shell);
 		remove_quotes(shell);
 
-	i = 0;
-	j = 0;
-	while (shell->parser_res[i])
-	{
-		while (shell->parser_res[i][j] != 0)
-		{
-			printf("%d %d %s;\n",i,j, shell->parser_res[i][j]);
-			j++;
-		}
-		j = 0;
-		i++;
-	}
-	printf("\n");
+	// i = 0;
+	// j = 0;
+	// while (shell->parser_res[i])
+	// {
+	// 	while (shell->parser_res[i][j] != 0)
+	// 	{
+	// 		printf("%d %d %s;\n",i,j, shell->parser_res[i][j]);
+	// 		j++;
+	// 	}
+	// 	j = 0;
+	// 	i++;
+	// }
+	// printf("\n");
 
 		shell->auxilar = malloc(sizeof(t_pipex *) * (shell->pipe_cnts + 2));
 		post_parser(shell);	
 
-	i = 0;
-	j = 0;
-	while (shell->parser_res[i])
-	{
-		while (shell->parser_res[i][j] != 0)
-		{
-			printf("%d %d %s;\n",i,j, shell->parser_res[i][j]);
-			j++;
-		}
-		j = 0;
-		i++;
-	}
-	printf("\n");
+	// i = 0;
+	// j = 0;
+	// while (shell->parser_res[i])
+	// {
+	// 	while (shell->parser_res[i][j] != 0)
+	// 	{
+	// 		printf("%d %d %s;\n",i,j, shell->parser_res[i][j]);
+	// 		j++;
+	// 	}
+	// 	j = 0;
+	// 	i++;
+	// }
+	// printf("\n");
 
 		if (shell->parser_res[0][0] == 0)	
 		{
