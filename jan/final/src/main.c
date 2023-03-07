@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 15:06:14 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 16:33:27 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,10 @@ void	close_env(t_shell *shell)
 	int	i;
 
 	free_lexer(shell);	
-	ft_clear(shell->env_param);	// move it from free_lexer
+	ft_clear(shell->env_param);	
 
 	i = 0;
-	while (shell->parser_res[i])
+	while (i < shell->pipe_cnts + 2)
 	{
 		free(shell->parser_res[i]);
 		i++;
@@ -308,8 +308,10 @@ char	**remove_empty_var(t_shell *shell)
 void	run_shell(t_shell *shell)
 {
 
-	// int i;
-
+	int i;
+	i = 0;
+	int j;
+	j = 0;
 	struct termios term;
 
 	tcgetattr(STDIN_FILENO, &shell->term);
@@ -341,6 +343,15 @@ void	run_shell(t_shell *shell)
 			free_lexer(shell);
 			continue ;
 		}	
+
+	i = 0;
+	while (shell->lexer_res[i])
+	{
+		printf("%d %s;\n",i, shell->lexer_res[i]);
+		i++;
+	}	
+	printf("\n");
+
 		parser(shell);
 
 		combine_str(shell->parser_res);
@@ -348,17 +359,36 @@ void	run_shell(t_shell *shell)
 		remove_spaces(shell);
 		remove_quotes(shell);
 
+	i = 0;
+	j = 0;
+	while (shell->parser_res[i])
+	{
+		while (shell->parser_res[i][j] != 0)
+		{
+			printf("%d %d %s;\n",i,j, shell->parser_res[i][j]);
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+	printf("\n");
 
 		shell->auxilar = malloc(sizeof(t_pipex *) * (shell->pipe_cnts + 2));
 		post_parser(shell);	
-	// i = 0;
-	// while (shell->parser_res[0][i])
-	// {
-	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
 
-	// 	i++;
-	// }
-	// printf("\n");
+	i = 0;
+	j = 0;
+	while (shell->parser_res[i])
+	{
+		while (shell->parser_res[i][j] != 0)
+		{
+			printf("%d %d %s;\n",i,j, shell->parser_res[i][j]);
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+	printf("\n");
 
 		if (shell->parser_res[0][0] == 0)	
 		{
@@ -384,18 +414,56 @@ void	run_shell(t_shell *shell)
 			pipex(shell);
 		else
 			execute(shell);
-		int	i = 0;
-		int	j = 0;
-		while (shell->parser_res[i])
-		{
-			j = 0;
-			while (shell->parser_res[i][j])
-			{
-				free(shell->parser_res[i][j]);
-				j++;
-			}
-			i++;
-		}
+		// int	i = 0;
+		// int	j = 0;
+		// while (shell->parser_res[i])
+		// {
+		// 	j = 0;
+		// 	while (shell->parser_res[i][j])
+		// 	{
+		// 		free(shell->parser_res[i][j]);
+		// 		j++;
+		// 	}
+		// 	i++;
+		// }
+
+	int i = 0;
+	// while (shell->parser_res[0][i])
+	// {
+	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
+
+	// 	i++;
+	// }
+	
+	free_lexer(shell);
+
+ 	// i = 0;
+	// while (shell->parser_res[0][i])
+	// {
+	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
+
+	// 	i++;
+	// }	
+	// int i = 0;
+	// int j = 0;	
+
+	while (i < shell->pipe_cnts + 2)
+	{	
+		free(shell->parser_res[i]);
+		i++;
+	}
+	free(shell->parser_res);
+
+	i = 0;
+
+	while (shell->auxilar[i])
+	{
+		free(shell->auxilar[i]);
+		i++;
+	}
+	free(shell->auxilar);
+// write(1,"1\n",2);
+
 		free(shell->prompt);
 		tcgetattr(STDIN_FILENO, &shell->term);
 		term = shell->term;
@@ -426,5 +494,5 @@ int main(int argc, char **argv, char **envp)
 	(void)argv;
 	create_env(&shell, envp);
 	run_shell(&shell);
-	// close_env(&shell);	
+	close_env(&shell);	
 }
