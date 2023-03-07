@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/04 17:20:54 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/06 21:31:19 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ typedef struct Shell
 // wrk_w_envp
 char	*env_get_value(char **envp, char *key);
 int		pos_into_env(char **envp, char *srch_str);
-int		twodimarr_str_calc(char **arr);
+int		tdar_str_calc(char **arr);
 char	*cut_equ(char *wrk_str);
 int		char_srch(char *str, char ch);
 char	**del_ind_fr_array(char **src, int size, int del_i);
@@ -104,6 +104,7 @@ void	ft_clear(char	**lsttclear);
 void	locate_parser_mem(t_shell *shell);
 void	parser(t_shell *shell);
 void	post_parser(t_shell *shell);
+char	**del_elms_fr_array(char **src, int size, int *del_arr, int s_p_cnt);
 
 // main
 int		is_sp_sim(char ch);

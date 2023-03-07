@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 15:50:40 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 17:08:43 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/06 21:04:25 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	pos_into_env(char **envp, char *srch_str)
 	return (-1);
 }
 
-int	twodimarr_str_calc(char **arr)
+int	tdar_str_calc(char **arr)
 {
 	int	i;
 

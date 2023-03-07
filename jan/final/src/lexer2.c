@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:40:21 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 17:42:12 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 12:04:45 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,32 +45,33 @@ int	end_lexem(t_lexer *lxr)
 	if ((lxr->st_nlm >= 0) && (is_sp_sim(str[cnt])
 			|| (str[cnt] == '\'') || (str[cnt] == '\"')))
 	{
+		if ((lxr->sng_qut == 1) && (str[cnt] != '\''))
+			return (0);
+		else if ((lxr->dub_qut == 1) && (str[cnt] != '\"'))
+			return (0);		
 		if ((lxr->sng_qut == 0) && (str[cnt] == '\''))
 		{
 			lxr->s_cnt--;
 			return (1);
 		}
 		if ((lxr->dub_qut == 0) && (str[cnt] == '\"'))
-		{
+		{	
 			lxr->s_cnt--;
 			return (1);
 		}		
-		// !!!
-		if ((lxr->sng_qut == 1) && (str[cnt] != '\''))
-			return (0);
-		else if ((lxr->dub_qut == 1) && (str[cnt] != '\"'))
-			return (0);
-			// !!!
 		if (str[cnt] == '\'')
+		{
+			if ((str[cnt + 1] != 0) && (str[cnt + 1] == ' '))
+				lxr->s_cnt += 1;		
 			lxr->sng_qut = 0;
+		}
 		else if (str[cnt] == '\"')
+		{
+			if ((str[cnt + 1] != 0) && (str[cnt + 1] == ' '))
+				lxr->s_cnt += 1;
 			lxr->dub_qut = 0;
+		}
 		res = 1;
-
-		// if ((str[cnt] == '\'') || (str[cnt] == '\"'))
-		// 	lxr->s_cnt++;	
-
-
 	}
 	return (res);
 }
@@ -85,7 +86,7 @@ int	check_two_pipes(t_shell *shell)
 	while (tlr[i])
 	{
 		if ((tlr[0][0] == '|' || tlr[0][0] == '>' || tlr[0][0] == '<')
-			&& twodimarr_str_calc(tlr) == 1)
+			&& tdar_str_calc(tlr) == 1)
 			return (1);
 		if (tlr[i + 1] != 0)
 		{
@@ -124,9 +125,8 @@ int	lexer_end(t_shell *shell, t_lexer *lr)
 	shell->pipe_cnts = lr->pipe_cnt;
 	shell->arr_cnts = lr->arr_cnt;
 	shell->arr_lf_cnts = lr->arr_lf_cnt;
-	// write(1,"8\n",2);	
-	work_with_dollar(shell);
-		// write(1,"7\n",2);
+	if (shell->env_param != 0)
+		work_with_dollar(shell);
 	if (lr->l_cnt == 0)
 		return (2);
 	if (check_two_pipes(shell))

@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:07:06 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 13:20:13 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/06 21:07:10 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	unset(t_shell *shell, char *new_str)
 	pos = pos_into_env(shell->env_param, new_str);
 	if (pos != -1)
 	{
-		envp_size = twodimarr_str_calc(shell->env_param);
+		envp_size = tdar_str_calc(shell->env_param);
 		new_env = del_ind_fr_array(shell->env_param, envp_size + 1, pos);
 		free(shell->env_param[pos]);
 		free(shell->env_param);
@@ -58,7 +58,7 @@ void	add_export(t_shell *shell, char *new_str)
 	int		envp_size;
 	char	**new_env;
 
-	envp_size = twodimarr_str_calc(shell->env_param);
+	envp_size = tdar_str_calc(shell->env_param);
 	new_env = copy_string_array(shell->env_param, envp_size + 2);
 	ft_clear(shell->env_param);
 	shell->env_param = new_env;

@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:06:25 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 18:33:14 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/06 21:04:13 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	here_doc(char *delimiter)
 	}
 }
 
-char	**del_elms_fr_array(char **src, int size, int *del_arr, t_parser *pp)
+char	**del_elms_fr_array(char **src, int size, int *del_arr, int s_p_cnt)
 {
 	int		i;
 	char	**dest;
@@ -89,7 +89,7 @@ char	**del_elms_fr_array(char **src, int size, int *del_arr, t_parser *pp)
 	{
 		j = 0;
 		copy = 1;
-		while(j < pp->s_p_cnt)
+		while(j < s_p_cnt)
 		{				
 			if (i == del_arr[j])
 				copy = 0;
@@ -274,7 +274,7 @@ void	post_parser(t_shell *shell)
 		}
 		pp.save_pos[pp.s_p_cnt] = 0;
 		pp.interim = del_elms_fr_array(shell->parser_res[i],
-				twodimarr_str_calc(shell->parser_res[i]), pp.save_pos, &pp);
+				tdar_str_calc(shell->parser_res[i]), pp.save_pos, pp.s_p_cnt);
 		free(shell->parser_res[i]);
 		shell->parser_res[i] = pp.interim;
 		i++;
