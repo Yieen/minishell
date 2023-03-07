@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 15:50:40 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 21:04:25 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 14:01:53 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ char	*env_get_value(char **envp, char *key)
 
 	pos = pos_into_env(envp, key);
 	if (pos == -1)
+		return (0);
+	if (char_srch(envp[pos], '=') == -1)
 		return (0);
 	res = &envp[pos][char_srch(envp[pos], '=') + 1];
 	return (res);

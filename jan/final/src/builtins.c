@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:07:06 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 21:07:10 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 14:07:52 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ int	export(t_shell *shell, char *new_str)
 	env_ind = pos_into_env(shell->env_param, temp);
 	if (env_ind == -1)
 		add_export(shell, new_str);
-	else
+	else if (char_srch(new_str, '=') != -1)	
 	{
 		free(shell->env_param[env_ind]);
 		shell->env_param[env_ind] = malloc(sizeof(char)

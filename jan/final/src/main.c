@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 12:50:28 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 13:52:47 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,7 +215,8 @@ void	combine_str(char ***prr)
 		while (prr[i][j])
 		{
 			if ((prr[i][j + 1] != 0) && ((prr[i][j + 1][0] == '\"') || (prr[i][j + 1][0] == '\''))
-				&& (prr[i][j][ft_strlen(prr[i][j]) - 1] != ' '))
+				&& (prr[i][j][ft_strlen(prr[i][j]) - 1] != ' ') 
+				&& (prr[i][j][ft_strlen(prr[i][j]) - 1] != (prr[i][j + 1][0])))
 			{
 				ft_strlcat(prr[i][j], prr[i][j + 1],
 					ft_strlen(prr[i][j]) + ft_strlen(prr[i][j + 1]) + 1);
@@ -228,8 +229,8 @@ void	combine_str(char ***prr)
 		interim = del_elms_fr_array(prr[i], tdar_str_calc(prr[i]), save_pos, s_p_cnt);
 		free(prr[i]);
 		prr[i] = interim;
+		free(save_pos);		
 		i++;
-		free(save_pos);
 	}
 }
 
@@ -244,36 +245,33 @@ void	combine_str2(char ***prr)
 
 int dp;
 int sp;
-// int cnt;
 
 	i = 0;
 	while (prr[i])
 	{
-		j = 0;
+		j = tdar_str_calc(prr[i]);
 		save_pos = malloc(sizeof(int) * (1024 + 1));
 		s_p_cnt = 0;
-
-
-		while (prr[i][j])
+		while (j > 0)
 		{
-		len = ft_strlen(prr[i][j]) - 1;
-
-			if ((prr[i][j + 1] != 0) && ((prr[i][j][len] == '\"') || (prr[i][j][len] == '\'')))
+			len = ft_strlen(prr[i][j - 1]) - 1;
+			if ((prr[i][j] != 0) && (len >= 1) && ((prr[i][j - 1][len] == '\"') || (prr[i][j - 1][len] == '\'')))
 			{
-			dp = char_srch(prr[i][j], '\"');
-			sp = char_srch(prr[i][j], '\'');
-			if ((prr[i][j][dp] == '\"') && (prr[i][j][len] == '\"'))
-				del_n_last(prr[i][j], dp);
-			if ((prr[i][j][sp] == '\'') && (prr[i][j][len] == '\''))
-				del_n_last(prr[i][j], sp);				
-				ft_strlcat(prr[i][j], prr[i][j + 1],
-					ft_strlen(prr[i][j]) + ft_strlen(prr[i][j + 1]) + 1);
-				save_pos[s_p_cnt] = j + 1;
+			dp = char_srch(prr[i][j - 1], '\"');
+			sp = char_srch(prr[i][j - 1], '\'');
+			if ((prr[i][j - 1][dp] == '\"') && (prr[i][j - 1][len] == '\"'))
+				del_n_last(prr[i][j - 1], dp);
+			if ((prr[i][j - 1][sp] == '\'') && (prr[i][j - 1][len] == '\''))
+				del_n_last(prr[i][j - 1], sp);				
+				ft_strlcat(prr[i][j - 1], prr[i][j],
+					ft_strlen(prr[i][j - 1]) + ft_strlen(prr[i][j]) + 1);
+				
+				save_pos[s_p_cnt] = j;
 				s_p_cnt += 1;					
 			}
-			if (prr[i][j][len] == ' ')
-				prr[i][j][len] = 0;
-			j++;
+			if (prr[i][j - 1][len] == ' ')
+				prr[i][j - 1][len] = 0;			
+			j--;
 		}
 		save_pos[s_p_cnt] = 0;
 		interim = del_elms_fr_array(prr[i], tdar_str_calc(prr[i]), save_pos, s_p_cnt);
@@ -306,6 +304,9 @@ char	**remove_empty_var(t_shell *shell)
 
 void	run_shell(t_shell *shell)
 {
+
+	// int i;
+
 	struct termios term;
 
 	tcgetattr(STDIN_FILENO, &shell->term);
@@ -343,7 +344,14 @@ void	run_shell(t_shell *shell)
 
 		shell->auxilar = malloc(sizeof(t_pipex *) * (shell->pipe_cnts + 2));
 		post_parser(shell);	
+	// i = 0;
+	// while (shell->parser_res[0][i])
+	// {
+	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
 
+	// 	i++;
+	// }
+	// printf("\n");
 
 		if (shell->parser_res[0][0] == 0)	
 		{
@@ -357,7 +365,26 @@ void	run_shell(t_shell *shell)
 		}
 
 	combine_str(shell->parser_res);
-	combine_str2(shell->parser_res);	
+
+	// i = 0;
+	// while (shell->parser_res[0][i])
+	// {
+	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
+
+	// 	i++;
+	// }
+	// printf("\n");
+
+	combine_str2(shell->parser_res);
+	// i = 0;
+	// while (shell->parser_res[0][i])
+	// {
+	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
+
+	// 	i++;
+	// }
+	// printf("\n");
+			
 		remove_spaces(shell);
 		remove_quotes(shell);
 

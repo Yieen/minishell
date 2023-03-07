@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:37:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 20:46:28 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 14:00:59 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	dlr_mlc(t_shell *shell)
 
 void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
 {
-	if (wwd->value != 0)
+	if ((wwd->value != 0) && (wwd->value[0] != '\0'))
 		ft_strlcat(wwd->rs_st, wwd->value,
 			ft_strlen(wwd->rs_st) + ft_strlen(wwd->value) + 1);
 	wwd->start = ft_substr(wwd->tlr[i], wwd->end_key + 1,
