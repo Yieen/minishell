@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 22:03:46 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/07 12:50:28 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	create_env(t_shell *new_shell, char **envp)
 	int envp_size;
 	// char	**new_env;
 
-	envp_size = twodimarr_str_calc(envp);
+	envp_size = tdar_str_calc(envp);
 	
 	// new_env = copy_string_array(envp, envp_size + 1);
 	// new_shell->env_param = new_env;
@@ -121,12 +121,29 @@ void	del_first_last(char *str)
 	str[i] = 0;
 }
 
+void	del_n_last(char *str, int del)
+{
+	int len;
+	int i;
+
+	i = del;
+	len = ft_strlen(str);
+	while(i < len - 2)
+	{
+		str[i] = str[i + 1];
+		i++;
+	}
+	str[i] = 0;
+}
+
 void	remove_quotes(t_shell *shell)
 {
 	int const	num = shell->pipe_cnts + 1;
 	int			i;
 	int			j;
 	int cnt;
+	int dp;
+	int sp;
 
 	i = 0;
 	while (i < num)
@@ -135,12 +152,14 @@ void	remove_quotes(t_shell *shell)
 		while (shell->parser_res[i][j])
 		{
 			cnt = 0;
+			dp = char_srch(shell->parser_res[i][j], '\"');
+			sp = char_srch(shell->parser_res[i][j], '\'');
 			while(shell->parser_res[i][j][cnt])
 				cnt++;
-			if ((shell->parser_res[i][j][0] == '\"') && (shell->parser_res[i][j][cnt - 1] == '\"'))
-				del_first_last(shell->parser_res[i][j]);
-			else if ((shell->parser_res[i][j][0] == '\'') && (shell->parser_res[i][j][cnt - 1] == '\''))
-				del_first_last(shell->parser_res[i][j]);
+			if ((shell->parser_res[i][j][dp] == '\"') && (shell->parser_res[i][j][cnt - 1] == '\"'))
+				del_n_last(shell->parser_res[i][j], dp);
+			if ((shell->parser_res[i][j][sp] == '\'') && (shell->parser_res[i][j][cnt - 1] == '\''))
+				del_n_last(shell->parser_res[i][j], sp);				
 			j++;
 		}
 		i++;
@@ -176,6 +195,92 @@ void	sig_handler(int sig)
 			printf("Quit: 3\n");
 		else
 			rl_redisplay();
+	}
+}
+
+void	combine_str(char ***prr)
+{
+	int			i;
+	int			j;
+	int		*save_pos;
+	int		s_p_cnt;
+	char	**interim;	
+
+	i = 0;
+	while (prr[i])
+	{
+		j = 0;
+		save_pos = malloc(sizeof(int) * (1024 + 1));
+		s_p_cnt = 0;
+		while (prr[i][j])
+		{
+			if ((prr[i][j + 1] != 0) && ((prr[i][j + 1][0] == '\"') || (prr[i][j + 1][0] == '\''))
+				&& (prr[i][j][ft_strlen(prr[i][j]) - 1] != ' '))
+			{
+				ft_strlcat(prr[i][j], prr[i][j + 1],
+					ft_strlen(prr[i][j]) + ft_strlen(prr[i][j + 1]) + 1);
+				save_pos[s_p_cnt] = j + 1;
+				s_p_cnt += 1;					
+			}
+			j++;
+		}
+		save_pos[s_p_cnt] = 0;
+		interim = del_elms_fr_array(prr[i], tdar_str_calc(prr[i]), save_pos, s_p_cnt);
+		free(prr[i]);
+		prr[i] = interim;
+		i++;
+		free(save_pos);
+	}
+}
+
+void	combine_str2(char ***prr)
+{
+	int			i;
+	int			j;
+	int		*save_pos;
+	int		s_p_cnt;
+	char	**interim;	
+	int len;
+
+int dp;
+int sp;
+// int cnt;
+
+	i = 0;
+	while (prr[i])
+	{
+		j = 0;
+		save_pos = malloc(sizeof(int) * (1024 + 1));
+		s_p_cnt = 0;
+
+
+		while (prr[i][j])
+		{
+		len = ft_strlen(prr[i][j]) - 1;
+
+			if ((prr[i][j + 1] != 0) && ((prr[i][j][len] == '\"') || (prr[i][j][len] == '\'')))
+			{
+			dp = char_srch(prr[i][j], '\"');
+			sp = char_srch(prr[i][j], '\'');
+			if ((prr[i][j][dp] == '\"') && (prr[i][j][len] == '\"'))
+				del_n_last(prr[i][j], dp);
+			if ((prr[i][j][sp] == '\'') && (prr[i][j][len] == '\''))
+				del_n_last(prr[i][j], sp);				
+				ft_strlcat(prr[i][j], prr[i][j + 1],
+					ft_strlen(prr[i][j]) + ft_strlen(prr[i][j + 1]) + 1);
+				save_pos[s_p_cnt] = j + 1;
+				s_p_cnt += 1;					
+			}
+			if (prr[i][j][len] == ' ')
+				prr[i][j][len] = 0;
+			j++;
+		}
+		save_pos[s_p_cnt] = 0;
+		interim = del_elms_fr_array(prr[i], tdar_str_calc(prr[i]), save_pos, s_p_cnt);
+		free(prr[i]);
+		prr[i] = interim;
+		i++;
+		free(save_pos);
 	}
 }
 
@@ -233,10 +338,13 @@ void	run_shell(t_shell *shell)
 			continue ;
 		}	
 		parser(shell);
-		remove_spaces(shell);
-		remove_quotes(shell);
+
+
+
 		shell->auxilar = malloc(sizeof(t_pipex *) * (shell->pipe_cnts + 2));
 		post_parser(shell);	
+
+
 		if (shell->parser_res[0][0] == 0)	
 		{
 			if (shell->auxilar[0]->input_fd >= 0)
@@ -247,6 +355,12 @@ void	run_shell(t_shell *shell)
 			free(shell->parser_res);
 			continue ;
 		}
+
+	combine_str(shell->parser_res);
+	combine_str2(shell->parser_res);	
+		remove_spaces(shell);
+		remove_quotes(shell);
+
 		tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
 		shell->cont_wrk = 0;
 		if (shell->pipe_cnts > 0)
