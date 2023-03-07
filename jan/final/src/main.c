@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 18:32:20 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/06 22:03:46 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,25 +75,6 @@ void	close_env(t_shell *shell)
 	free(shell->auxilar);
 }
 
-void	read_prompt(t_shell *shell)
-{
-	// shell->prompt = readline("get_curr_dirr>");
-	// shell->prompt = malloc(sizeof(char *) * (wrds_s_cnt(shell->prompt) + 1));	
-	// shell->prompt = "|"; 
-	// shell->prompt = "echo ls>>bs $a $$ as 1| wc -l | exp<<ort a=abs"; 
-	// shell->prompt = "\'echo abs>$a$|no$a2$\'1|\"wc -l\"| export a=abs"; 	
-	shell->prompt = "\"echo a>bs$a$|no$a2 $\"1|\"wc -l\"| export a=abs"; 
-	// shell->prompt = "echo ls << << 35 $  | test add sth << sth1     | asd < 123"; 	
-	// shell->prompt = "echo ls >> >> 35 $  | test add sth > sth1 | asd >> 123"; 		
-	// shell->prompt = "echo ls > > 35 $  | test add sth > sth1 | asd 123 "; 		
-		// shell->prompt = "echo 123 $a dfg | sth";	
-		// shell->lexer_res = malloc(sizeof(char *) * (ft_strlen(shell->prompt) + 1));
-
-
-} 
-
-
-
 void	remove_spaces(t_shell *shell)
 {
 	int const	num = shell->pipe_cnts + 1;
@@ -110,6 +91,11 @@ void	remove_spaces(t_shell *shell)
 			cnt = 0;
 			while(shell->parser_res[i][j][cnt])
 				cnt++;
+			if (cnt == 0)
+			{
+				j++;
+				continue ;
+			}
 			if (shell->parser_res[i][j][cnt - 1] == ' ')
 				shell->parser_res[i][j][cnt - 1] = 0;
 			if (shell->parser_res[i][j][cnt - 1] == '\t')
@@ -153,6 +139,8 @@ void	remove_quotes(t_shell *shell)
 				cnt++;
 			if ((shell->parser_res[i][j][0] == '\"') && (shell->parser_res[i][j][cnt - 1] == '\"'))
 				del_first_last(shell->parser_res[i][j]);
+			else if ((shell->parser_res[i][j][0] == '\'') && (shell->parser_res[i][j][cnt - 1] == '\''))
+				del_first_last(shell->parser_res[i][j]);
 			j++;
 		}
 		i++;
@@ -191,15 +179,32 @@ void	sig_handler(int sig)
 	}
 }
 
+char	**remove_empty_var(t_shell *shell)
+{
+	int		i;
+
+	if (!shell->env_param)
+		return (NULL);
+	i = 0;
+	while (shell->env_param[i])
+	{
+		if (!ft_strchr(shell->env_param[i], '='))
+		{
+			unset(shell, shell->env_param[i]);
+			i = 0;
+			continue ;
+		}
+		i++;
+	}
+	return (shell->env_param);
+}
 
 void	run_shell(t_shell *shell)
 {
-	// int i;
-
 	struct termios term;
-	struct termios term_old;
-	tcgetattr(STDIN_FILENO, &term_old);
-	tcgetattr(STDIN_FILENO, &term);
+
+	tcgetattr(STDIN_FILENO, &shell->term);
+	term = shell->term;
 	term.c_lflag &= ~(ECHOCTL);
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
 	process_running(shell);
@@ -213,14 +218,13 @@ void	run_shell(t_shell *shell)
 			if (!shell->prompt)
 			{
 				ft_clear(shell->env_param);
-				tcsetattr(STDIN_FILENO, TCSANOW, &term_old);
+				tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
 				exit(EXIT_SUCCESS);
 			}
 			if (shell->prompt[0] != '\0')
 				break ;
 		}
 		add_history(shell->prompt);
-			// write(1,"0\n",2);	
 		if (lexer(shell))
 		{
 			if (lexer(shell) == 1)
@@ -228,54 +232,43 @@ void	run_shell(t_shell *shell)
 			free_lexer(shell);
 			continue ;
 		}	
-
-	// i = 0;
-	// while (shell->lexer_res[i])
-	// {
-	// 	printf("%d %s;\n",i, shell->lexer_res[i]);
-
-	// 	i++;
-	// }
-
 		parser(shell);
-
-// write(1,"1\n", 2);
-	// i = 0;
-	// while (shell->parser_res[0][i])
-	// {
-	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
-
-	// 	i++;
-	// }
-
 		remove_spaces(shell);
 		remove_quotes(shell);
 		shell->auxilar = malloc(sizeof(t_pipex *) * (shell->pipe_cnts + 2));
 		post_parser(shell);	
-		// write(1,"7\n", 2);
 		if (shell->parser_res[0][0] == 0)	
 		{
+			if (shell->auxilar[0]->input_fd >= 0)
+				close(shell->auxilar[0]->input_fd);
+			if (shell->auxilar[0]->output_fd >= 0)
+				close(shell->auxilar[0]->output_fd);
 			free_lexer(shell);
 			free(shell->parser_res);
 			continue ;
 		}
-	// i = 0;
-	// while (shell->parser_res[0][i])
-	// {
-	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
-
-	// 	i++;
-	// }
-
-
-		tcsetattr(STDIN_FILENO, TCSANOW, &term_old);		
+		tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
 		shell->cont_wrk = 0;
 		if (shell->pipe_cnts > 0)
 			pipex(shell);
 		else
-			execute(shell);	
+			execute(shell);
+		int	i = 0;
+		int	j = 0;
+		while (shell->parser_res[i])
+		{
+			j = 0;
+			while (shell->parser_res[i][j])
+			{
+				free(shell->parser_res[i][j]);
+				j++;
+			}
+			i++;
+		}
 		free(shell->prompt);
-		tcgetattr(STDIN_FILENO, &term_old);
+		tcgetattr(STDIN_FILENO, &shell->term);
+		term = shell->term;
+		term.c_lflag &= ~(ECHOCTL);
 		tcsetattr(STDIN_FILENO, TCSANOW, &term);
 		shell->cont_wrk = 1;
 	}
@@ -288,10 +281,16 @@ void	run_shell(t_shell *shell)
 
 // 'echo $USER'
 
+void	leaks(void)
+{
+	system("leaks minishell");
+}
+
 int main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
 
+	// atexit(leaks);
 	(void)argc;
 	(void)argv;
 	create_env(&shell, envp);

@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 21:31:19 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 12:43:50 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,16 +72,17 @@ typedef struct Lexer
 
 typedef struct Shell
 {
-	char	**env_param;
-	char	**lexer_res;
-	char	*prompt;
-	int		cont_wrk;
-	int		pipe_cnts;
-	int		arr_cnts;
-	int		arr_lf_cnts;
-	char	***parser_res;
-	t_pipex	**auxilar;
-	int		last_comm_ret;
+	char			**env_param;
+	char			**lexer_res;
+	char			*prompt;
+	int				cont_wrk;
+	int				pipe_cnts;
+	int				arr_cnts;
+	int				arr_lf_cnts;
+	char			***parser_res;
+	t_pipex			**auxilar;
+	int				last_comm_ret;
+	struct termios	term;
 }	t_shell;
 
 // wrk_w_envp
@@ -144,6 +145,9 @@ void	second_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
 int		dlr_mlc(t_shell *shell);
 void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
 void	work_with_dollar( t_shell *shell);
+
+char	**remove_empty_var(t_shell *shell);
+char	*b_get_pwd(void);
 
 #endif
 

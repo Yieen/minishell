@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 14:16:18 by jharrach          #+#    #+#             */
-/*   Updated: 2023/03/03 16:44:56 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/06 21:22:31 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ static char	*b_pwd_realloc_buf(char *buffer, size_t *size)
 	new_buffer = malloc(sizeof(*new_buffer) * (*size));
 	if (!new_buffer)
 	{
-		perror(PROG_NAME ": pwd: error: malloc()");
 		free(buffer);
 		return (NULL);
 	}
@@ -47,28 +46,75 @@ static char	*b_pwd_realloc_buf(char *buffer, size_t *size)
 	return (new_buffer);
 }
 
-int	b_pwd(t_shell *shell, int i)
+char *b_get_pwd(void)
 {
-	char		*buffer;
-	size_t		size;
+	char	*buffer;
+	size_t	size;
 
-	(void)shell;
-	(void)i;
 	size = PWD_BUF_SIZE;
 	buffer = malloc(sizeof(*buffer) * size);
 	if (!buffer)
-	{
-		perror(PROG_NAME ": pwd: error: malloc()");
-		return (EXIT_FAILURE);
-	}
+		return (NULL);
 	while (!getcwd(buffer, size))
 	{
 		buffer = b_pwd_realloc_buf(buffer, &size);
 		if (!buffer)
-			return (EXIT_FAILURE);
+			return (NULL);
 	}
-	printf("%s\n", buffer);
-	free(buffer);
+	return (buffer);
+}
+
+int	b_pwd(t_shell *shell, int i)
+{
+	char	*pwd;
+
+	(void)shell;
+	(void)i;
+	pwd = b_get_pwd();
+	if (!pwd)
+	{
+		perror(PROG_NAME ": pwd: error: malloc()");
+		return (EXIT_FAILURE);
+	}
+	printf("%s\n", pwd);
+	free(pwd);
+	return (EXIT_SUCCESS);
+}
+
+static int	b_cd_set_pwd(t_shell *shell)
+{
+	char		*pwd;
+	char		*var;
+	char		*old_pwd;
+
+	old_pwd = env_get_value(shell->env_param, "PWD");
+	if (!old_pwd)
+		var = ft_strdup("OLDPWD=");
+	else
+		var = ft_strjoin("OLDPWD=", old_pwd);
+	if (export(shell, var))
+	{
+		perror(PROG_NAME ": cd: error: export()");
+		return (EXIT_FAILURE);
+	}
+	pwd = b_get_pwd();
+	if (!pwd)
+	{
+		perror(PROG_NAME ": cd: error: b_get_pwd()");
+		return (EXIT_FAILURE);
+	}
+	var = ft_strjoin("PWD=", pwd);
+	free(pwd);
+	if (!var)
+	{
+		perror(PROG_NAME ": cd: error: ft_strjoin()");
+		return (EXIT_FAILURE);
+	}
+	if (export(shell, var))
+	{
+		perror(PROG_NAME ": cd: error: export()");
+		return (EXIT_FAILURE);
+	}
 	return (EXIT_SUCCESS);
 }
 
@@ -88,7 +134,7 @@ int	b_cd(t_shell *shell, int i)
 		perror(argv[1]);
 		return (EXIT_FAILURE);
 	}
-	return (EXIT_SUCCESS);
+	return (b_cd_set_pwd(shell));
 }
 
 void	free_minishell(t_shell *shell)
@@ -146,7 +192,8 @@ int	b_env(t_shell *shell, int i)
 	i = -1;
 	while (shell->env_param[++i])
 	{
-		printf("%s\n", shell->env_param[i]);
+		if (ft_strchr(shell->env_param[i], '='))
+			printf("%s\n", shell->env_param[i]);
 	}
 	return (EXIT_SUCCESS);
 }
@@ -170,7 +217,6 @@ static void	buildin_with_redirection(t_shell *shell, t_buildin ft_buildin)
 	int	std_out;
 
 	std_out = dup(STDOUT_FILENO);
-	printf("std_out: %d\n", std_out);
 	if (std_out == -1)
 		buildin_error(shell, shell->auxilar[0]->output_fd, -1, 1);
 	if (dup2(shell->auxilar[0]->output_fd, STDOUT_FILENO) == -1)
@@ -228,7 +274,7 @@ static void	execute_child(t_shell *shell)
 		}
 		close(shell->auxilar[0]->input_fd);
 	}
-	execve(get_pathname(shell, 0), shell->parser_res[0], shell->env_param);
+	execve(get_pathname(shell, 0), shell->parser_res[0], remove_empty_var(shell));
 	perror(PROG_NAME ": error: execve()");
 	exit(EXIT_FAILURE);
 }
