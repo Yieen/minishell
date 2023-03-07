@@ -6,22 +6,11 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:06:25 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 14:30:32 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 15:07:33 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-void rm_sp_str(char *str)
-{
-	int cnt;
-
-	cnt = ft_strlen(str);
-	if ((str[0] == '\"') && (str[cnt - 1] == '\"'))
-		del_n_last(str, 0);
-	else if ((str[0] == '\'') && (str[cnt - 1] == '\''))
-		del_n_last(str, 0);	
-}
 
 void	locate_parser_mem(t_shell *shell)
 {
@@ -100,7 +89,7 @@ char	**del_elms_fr_array(char **src, int size, int *del_arr, int s_p_cnt)
 	{
 		j = 0;
 		copy = 1;
-		while(j < s_p_cnt)
+		while (j < s_p_cnt)
 		{				
 			if (i == del_arr[j])
 				copy = 0;
@@ -122,7 +111,6 @@ void	one_left_arrow(t_shell *shell, t_parser *pp, int i, int j)
 			close(shell->auxilar[i]->input_fd);
 		if (!is_sp_sim(shell->parser_res[i][j + 1][0]))
 		{
-			rm_sp_str(shell->parser_res[i][j + 1]);
 			shell->auxilar[i]->input_fd
 				= open(shell->parser_res[i][j + 1], O_RDONLY);
 			if ((shell->auxilar[i]->input_fd == -1)
@@ -152,7 +140,6 @@ void	two_left_arrow(t_shell *shell, t_parser *pp, int i, int j)
 			close(shell->auxilar[i]->input_fd);
 		if (!is_sp_sim(shell->parser_res[i][j + 1][0]))
 		{
-			rm_sp_str(shell->parser_res[i][j + 1]);
 			shell->auxilar[i]->input_fd
 				= here_doc(shell->parser_res[i][j + 1]);
 			if ((shell->auxilar[i]->input_fd == -1)
@@ -197,7 +184,6 @@ void	one_right_arrow(t_shell *shell, t_parser *pp, int i, int j)
 			close(shell->auxilar[i]->output_fd);
 		if (!is_sp_sim(shell->parser_res[i][j + 1][0]))
 		{
-			rm_sp_str(shell->parser_res[i][j + 1]);
 			shell->auxilar[i]->output_fd = open(shell->parser_res[i][j + 1],
 					O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			if (shell->auxilar[i]->output_fd == -1)
@@ -222,7 +208,6 @@ void	two_right_arrow(t_shell *shell, t_parser *pp, int i, int j)
 			close(shell->auxilar[i]->output_fd);
 		if (!is_sp_sim(shell->parser_res[i][j + 1][0]))
 		{
-			rm_sp_str(shell->parser_res[i][j + 1]);
 			shell->auxilar[i]->output_fd = open(shell->parser_res[i][j + 1],
 					O_WRONLY | O_APPEND | O_CREAT, 0644);
 			if (shell->auxilar[i]->output_fd == -1)

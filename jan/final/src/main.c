@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 14:16:55 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 15:06:14 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,6 +216,7 @@ void	combine_str(char ***prr)
 		{
 			if ((prr[i][j + 1] != 0) && ((prr[i][j + 1][0] == '\"') || (prr[i][j + 1][0] == '\''))
 				&& (prr[i][j][ft_strlen(prr[i][j]) - 1] != ' ') 
+				&& (prr[i][j][0] != '<') && (prr[i][j][0] != '>')
 				&& (prr[i][j][ft_strlen(prr[i][j]) - 1] != (prr[i][j + 1][0])))
 			{
 				ft_strlcat(prr[i][j], prr[i][j + 1],
@@ -255,7 +256,9 @@ int sp;
 		while (j > 0)
 		{
 			len = ft_strlen(prr[i][j - 1]) - 1;
-			if ((prr[i][j] != 0) && (len >= 1) && ((prr[i][j - 1][len] == '\"') || (prr[i][j - 1][len] == '\'')))
+			if ((prr[i][j] != 0) && (len >= 1)
+				&& ((prr[i][j - 1][0] != '<') && (prr[i][j - 1][0] != '>'))
+				&& ((prr[i][j - 1][len] == '\"') || (prr[i][j - 1][len] == '\'')))
 			{
 			dp = char_srch(prr[i][j - 1], '\"');
 			sp = char_srch(prr[i][j - 1], '\'');
@@ -340,6 +343,10 @@ void	run_shell(t_shell *shell)
 		}	
 		parser(shell);
 
+		combine_str(shell->parser_res);
+		combine_str2(shell->parser_res);		
+		remove_spaces(shell);
+		remove_quotes(shell);
 
 
 		shell->auxilar = malloc(sizeof(t_pipex *) * (shell->pipe_cnts + 2));
@@ -364,29 +371,12 @@ void	run_shell(t_shell *shell)
 			continue ;
 		}
 
-	combine_str(shell->parser_res);
+	// combine_str(shell->parser_res);
 
-	// i = 0;
-	// while (shell->parser_res[0][i])
-	// {
-	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
-
-	// 	i++;
-	// }
-	// printf("\n");
-
-	combine_str2(shell->parser_res);
-	// i = 0;
-	// while (shell->parser_res[0][i])
-	// {
-	// 	printf("%d %s;\n",i, shell->parser_res[0][i]);
-
-	// 	i++;
-	// }
-	// printf("\n");
+	// combine_str2(shell->parser_res);
 			
-		remove_spaces(shell);
-		remove_quotes(shell);
+	// 	remove_spaces(shell);
+	// 	remove_quotes(shell);
 
 		tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
 		shell->cont_wrk = 0;
