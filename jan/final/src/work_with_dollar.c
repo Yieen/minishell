@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:37:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 14:00:59 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/07 17:51:37 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	second_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
 	if (wwd->key[0] == '?')
 		wwd->value = ft_itoa(shell->last_comm_ret);
 	else
-		wwd->value = env_get_value(shell->env_param, wwd->key);
+		wwd->value = ft_strdup(env_get_value(shell->env_param, wwd->key));
 	free(wwd->key);
 }
 
@@ -59,8 +59,11 @@ int	dlr_mlc(t_shell *shell)
 void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
 {
 	if ((wwd->value != 0) && (wwd->value[0] != '\0'))
+	{
 		ft_strlcat(wwd->rs_st, wwd->value,
-			ft_strlen(wwd->rs_st) + ft_strlen(wwd->value) + 1);
+			ft_strlen(wwd->rs_st) + ft_strlen(wwd->value) + 1);	
+		free(wwd->value);
+	}
 	wwd->start = ft_substr(wwd->tlr[i], wwd->end_key + 1,
 			ft_strlen(wwd->tlr[i]) - wwd->end_key);
 	ft_strlcat(wwd->rs_st, wwd->start,

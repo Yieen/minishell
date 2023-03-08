@@ -6,7 +6,7 @@
 #    By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/07 22:00:28 by jharrach          #+#    #+#              #
-#    Updated: 2023/03/07 17:17:58 by inovomli         ###   ########.fr        #
+#    Updated: 2023/03/07 19:42:42 by inovomli         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@
 
 NAME		= minishell
 
-SRC_NAME	= main pipes execute pathname parser_and_add wrk_w_envp builtins lexer lexer2 work_with_dollar
+SRC_NAME	= main pipes execute pathname parser_and_add wrk_w_envp builtins lexer lexer2 work_with_dollar quot_connect
 
 SRC_DIR		= src/
 OBJ_DIR		= obj/
