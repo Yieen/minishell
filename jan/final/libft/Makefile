@@ -6,7 +6,7 @@
 #    By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/06 18:19:07 by jharrach          #+#    #+#              #
-#    Updated: 2023/02/14 21:17:39 by jharrach         ###   ########.fr        #
+#    Updated: 2023/03/08 13:54:29 by jharrach         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -76,9 +76,13 @@ SRC_PRINTF_FD		+= ft_dprintf_u
 SRC_PRINTF_FD		+= ft_dprintf_x
 SRC_PRINTF_FD		+= ft_dprintf
 
-SRC_EXTRA			= ft_strcmp
+SRC_EXTRA			+= ft_strcmp
+SRC_EXTRA			+= ft_atol
+SRC_EXTRA			+= ft_containsdigit
+SRC_EXTRA			+= ft_islong
+SRC_EXTRA			+= ft_isspace
 
-SRC_GET_NEXT_LINE	= get_next_line
+SRC_GET_NEXT_LINE	+= get_next_line
 
 CFLAGS				= -Wall -Wextra -Werror
 ARFLAGS				= rcs

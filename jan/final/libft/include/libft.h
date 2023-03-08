@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 16:45:38 by jharrach          #+#    #+#             */
-/*   Updated: 2023/02/14 21:08:49 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/08 13:50:58 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,5 +114,9 @@ int			ft_dprintf_u(int fd, unsigned int num, t_placeholder ph);
 char		*get_next_line(int fd);
 
 int			ft_strcmp(const char *s1, const char *s2);
+int			ft_isspace(int c);
+int			ft_islong(const char *str);
+int			ft_containsdigit(const char *str);
+long		ft_atol(const char *str);
 
 #endif

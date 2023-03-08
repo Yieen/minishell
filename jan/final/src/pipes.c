@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 14:01:51 by jharrach          #+#    #+#             */
-/*   Updated: 2023/03/06 20:48:27 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/08 16:22:13 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ void	pipex(t_shell *shell)
 			if (pipe(fd[i % 2]) == -1)
 				pipex_fatal_error(shell, fd, i, 0);
 		}
-		if (shell->auxilar[i]->is_exec)
+		if (shell->auxilar[i]->is_exec && shell->parser_res[i][0])
 		{
 			shell->auxilar[i]->pr_id = fork();
 			if (shell->auxilar[i]->pr_id == -1)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 14:16:18 by jharrach          #+#    #+#             */
-/*   Updated: 2023/03/07 15:44:30 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 16:24:51 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,21 +144,10 @@ void	free_minishell(t_shell *shell)
 
 static int	b_exit_check_argument(t_shell *shell, int i)
 {
-	char	*tmp;
-	int		status;
-	int		is_num;
+	long	status;
 
-	status = ft_atoi(shell->parser_res[i][1]);
-	tmp = ft_itoa(status);
-	if (!tmp)
-	{
-		perror(PROG_NAME ": exit: error: malloc()");
-		free_minishell(shell);
-		exit(EXIT_FAILURE);
-	}
-	is_num = !ft_strcmp(shell->parser_res[i][1], tmp);
-	free(tmp);
-	if (!is_num)
+	status = ft_atol(shell->parser_res[i][1]);
+	if (!ft_islong(shell->parser_res[i][1]))
 	{
 		ft_putstr_fd(PROG_NAME ": exit: ", STDERR_FILENO);
 		ft_putstr_fd(shell->parser_res[i][1], STDERR_FILENO);
@@ -285,12 +274,16 @@ void	execute(t_shell *shell)
 	pid_t	pid;
 	int		status;
 
-	if (!shell->auxilar[0]->is_exec)
+	if (!shell->auxilar[0]->is_exec || !shell->parser_res[0][0])
+	{
+		if (shell->auxilar[0]->output_fd > 0)
+			close(shell->auxilar[0]->output_fd);
+		if (shell->auxilar[0]->input_fd >= 0)
+			close(shell->auxilar[0]->input_fd);
 		return ;
+	}
 	if (check_buildins(shell))
 	{
-		if (!shell->auxilar[0]->is_exec)
-			return ;
 		pid = fork();
 		if (pid == -1)
 		{
