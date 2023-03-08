@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:37:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 16:19:22 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 16:52:46 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	first_part_wwd(t_dolar	*wwd, int i)
 {
-	wwd->save_pos = malloc(sizeof(char) * ft_strlen(wwd->tlr[i]));
+	wwd->save_pos = malloc(sizeof(int) * ft_strlen(wwd->tlr[i]));
 	wwd->s_p_cnt = 0;
 	wwd->d_pos = char_srch(wwd->tlr[i], '$');
 }

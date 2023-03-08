@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:40:21 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 12:04:45 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 16:23:59 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	end_lexem(t_lexer *lxr)
 		if ((lxr->sng_qut == 1) && (str[cnt] != '\''))
 			return (0);
 		else if ((lxr->dub_qut == 1) && (str[cnt] != '\"'))
-			return (0);		
+			return (0);
 		if ((lxr->sng_qut == 0) && (str[cnt] == '\''))
 		{
 			lxr->s_cnt--;
@@ -62,7 +62,7 @@ int	end_lexem(t_lexer *lxr)
 		if (str[cnt] == '\'')
 		{
 			if ((str[cnt + 1] != 0) && (str[cnt + 1] == ' '))
-				lxr->s_cnt += 1;		
+				lxr->s_cnt += 1;
 			lxr->sng_qut = 0;
 		}
 		else if (str[cnt] == '\"')
@@ -120,7 +120,6 @@ void	init_lexer(t_shell *shell, t_lexer	*lexer_st)
 
 int	lexer_end(t_shell *shell, t_lexer *lr)
 {
-	
 	shell->lexer_res[lr->l_cnt] = 0;
 	shell->pipe_cnts = lr->pipe_cnt;
 	shell->arr_cnts = lr->arr_cnt;
@@ -154,7 +153,7 @@ int	lexer(t_shell *shell)
 			shell->lexer_res[lr.l_cnt] = ft_substr(shell->prompt,
 					lr.st_nlm, (lr.s_cnt - lr.st_nlm + 1));
 			lr.l_cnt++;
-			lr.st_nlm = -1;			
+			lr.st_nlm = -1;
 		}
 		lr.s_cnt++;
 	}

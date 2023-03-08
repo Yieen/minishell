@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 16:30:05 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/08 16:52:58 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,93 +134,6 @@ void	sig_handler(int sig)
 			rl_redisplay();
 	}
 }
-
-// void	combine_str(char ***prr)
-// {
-// 	int			i;
-// 	int			j;
-// 	int		*save_pos;
-// 	int		s_p_cnt;
-// 	char	**interim;	
-
-// 	i = 0;
-// 	while (prr[i])
-// 	{
-// 		j = 0;
-// 		save_pos = malloc(sizeof(int) * (1024 + 1));
-// 		s_p_cnt = 0;
-// 		while (prr[i][j])
-// 		{
-// 			if ((prr[i][j + 1] != 0) && ((prr[i][j + 1][0] == '\"') || (prr[i][j + 1][0] == '\''))
-// 				&& (prr[i][j][ft_strlen(prr[i][j]) - 1] != ' ') 
-// 				&& (prr[i][j][0] != '<') && (prr[i][j][0] != '>')
-// 				&& !(((prr[i][j][ft_strlen(prr[i][j]) - 1] == '\'') && (prr[i][j + 1][0] == '\"')) || ((prr[i][j][ft_strlen(prr[i][j]) - 1] == '\"') && (prr[i][j + 1][0] == '\'')))
-// 				&& (prr[i][j][ft_strlen(prr[i][j]) - 1] != (prr[i][j + 1][0])))
-// 			{
-// 				ft_strlcat(prr[i][j], prr[i][j + 1],
-// 					ft_strlen(prr[i][j]) + ft_strlen(prr[i][j + 1]) + 1);
-// 				save_pos[s_p_cnt] = j + 1;
-// 				s_p_cnt += 1;					
-// 			}
-// 			j++;
-// 		}
-// 		save_pos[s_p_cnt] = 0;
-// 		interim = del_elms_fr_array(prr[i], tdar_str_calc(prr[i]), save_pos, s_p_cnt);
-// 		free(prr[i]);
-// 		prr[i] = interim;
-// 		free(save_pos);		
-// 		i++;
-// 	}
-// }
-
-// void	combine_str2(char ***prr)
-// {
-// 	int			i;
-// 	int			j;
-// 	int		*save_pos;
-// 	int		s_p_cnt;
-// 	char	**interim;	
-// 	int len;
-// 	int dp;
-// 	int sp;
-
-// 	i = 0;
-// 	while (prr[i])
-// 	{
-// 		j = tdar_str_calc(prr[i]);
-// 		save_pos = malloc(sizeof(int) * (1024 + 1));
-// 		s_p_cnt = 0;
-// 		while (j > 0)
-// 		{
-// 			len = ft_strlen(prr[i][j - 1]) - 1;
-// 			if ((prr[i][j] != 0) && (len >= 1)
-// 				&& ((prr[i][j - 1][0] != '<') && (prr[i][j - 1][0] != '>'))
-// 				&& ((prr[i][j - 1][len] == '\"') || (prr[i][j - 1][len] == '\'')))
-// 			{
-// 			dp = char_srch(prr[i][j - 1], '\"');
-// 			sp = char_srch(prr[i][j - 1], '\'');
-// 			if ((prr[i][j - 1][dp] == '\"') && (prr[i][j - 1][len] == '\"'))
-// 				del_n_last(prr[i][j - 1], dp);
-// 			if ((prr[i][j - 1][sp] == '\'') && (prr[i][j - 1][len] == '\''))
-// 				del_n_last(prr[i][j - 1], sp);				
-// 				ft_strlcat(prr[i][j - 1], prr[i][j],
-// 					ft_strlen(prr[i][j - 1]) + ft_strlen(prr[i][j]) + 1);
-				
-// 				save_pos[s_p_cnt] = j;
-// 				s_p_cnt += 1;					
-// 			}
-// 			if (prr[i][j - 1][len] == ' ')
-// 				prr[i][j - 1][len] = 0;			
-// 			j--;
-// 		}
-// 		save_pos[s_p_cnt] = 0;
-// 		interim = del_elms_fr_array(prr[i], tdar_str_calc(prr[i]), save_pos, s_p_cnt);
-// 		free(prr[i]);
-// 		prr[i] = interim;
-// 		i++;
-// 		free(save_pos);
-// 	}
-// }
 
 char	**remove_empty_var(t_shell *shell)
 {
