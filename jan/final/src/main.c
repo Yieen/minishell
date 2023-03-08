@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 20:08:47 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 16:30:05 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -365,17 +365,6 @@ void	run_shell(t_shell *shell)
 	// 	i++;
 	// }
 	// printf("\n");
-
-		if (shell->parser_res[0][0] == 0)	
-		{
-			if (shell->auxilar[0]->input_fd >= 0)
-				close(shell->auxilar[0]->input_fd);
-			if (shell->auxilar[0]->output_fd >= 0)
-				close(shell->auxilar[0]->output_fd);
-			free_lexer(shell);
-			free(shell->parser_res);
-			continue ;
-		}
 
 	// combine_str(shell->parser_res);
 
