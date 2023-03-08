@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 20:40:33 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 21:12:41 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,9 +99,13 @@ void	run_shell(t_shell *shell)
 		add_history(shell->prompt);
 		if (lexer(shell))
 		{
-			if (lexer(shell) == 1)
-				printf("wrong input\n");
 			free_lexer(shell);
+			if (lexer(shell) == 1)
+			{
+				printf("wrong input\n");
+				free_lexer(shell);
+			}
+			free(shell->prompt);
 			continue ;
 		}	
 		parser(shell);
