@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:37:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 18:08:21 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 19:14:00 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,6 @@ void	work_with_dollar( t_shell *shell)
 		wwd.j = -1;
 		while (++wwd.j < wwd.s_p_cnt)
 			wwd.tlr[wwd.i][wwd.save_pos[wwd.j]] = '$';
-		if (wwd.save_pos[wwd.j] + 1 == (int)ft_strlen(wwd.tlr[wwd.i]))
-			wwd.tlr[wwd.i][wwd.save_pos[wwd.j] + 1] = 0;
 		free(wwd.save_pos);
 		wwd.i++;
 	}	
