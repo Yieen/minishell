@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:37:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 17:51:37 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 16:19:22 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
 	if ((wwd->value != 0) && (wwd->value[0] != '\0'))
 	{
 		ft_strlcat(wwd->rs_st, wwd->value,
-			ft_strlen(wwd->rs_st) + ft_strlen(wwd->value) + 1);	
+			ft_strlen(wwd->rs_st) + ft_strlen(wwd->value) + 1);
 		free(wwd->value);
 	}
 	wwd->start = ft_substr(wwd->tlr[i], wwd->end_key + 1,
@@ -86,7 +86,7 @@ void	work_with_dollar( t_shell *shell)
 	wwd.rs_st = malloc(sizeof(char) * dlr_mlc(shell));
 	while (wwd.tlr[i])
 	{
-		if ((wwd.tlr[i][0] == '\'')  && (++i))
+		if ((wwd.tlr[i][0] == '\'') && (++i))
 			continue ;
 		first_part_wwd(&wwd, i);
 		while (wwd.d_pos != -1)
