@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 14:16:18 by jharrach          #+#    #+#             */
-/*   Updated: 2023/03/08 16:24:51 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/08 19:43:34 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,22 @@ int	b_cd(t_shell *shell, int i)
 
 void	free_minishell(t_shell *shell)
 {
-	(void)shell;
+	int i = 0;
+
+	free_lexer(shell);
+	while (i < shell->pipe_cnts + 2)
+	{	
+		free(shell->parser_res[i]);
+		i++;
+	}
+	free(shell->parser_res);
+	i = 0;
+	while (shell->auxilar[i])
+	{
+		free(shell->auxilar[i]);
+		i++;
+	}
+	free(shell->auxilar);
 }
 
 static int	b_exit_check_argument(t_shell *shell, int i)

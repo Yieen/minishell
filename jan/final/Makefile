@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+         #
+#    By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/07 22:00:28 by jharrach          #+#    #+#              #
-#    Updated: 2023/03/08 19:12:40 by inovomli         ###   ########.fr        #
+#    Updated: 2023/03/08 19:44:35 by jharrach         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ OBJ_DIR		= obj/
 
 OBJ			+= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_NAME)))
 
-CFLAGS		= -Wall -Wextra -Werror -I$(shell brew --prefix readline)/include  -fsanitize=address #-Wno-gnu-include-next -I LeakSanitizer/include
+CFLAGS		= -Wall -Wextra -Werror -I$(shell brew --prefix readline)/include  -fsanitize=address -fsanitize=undefined #-Wno-gnu-include-next -I LeakSanitizer/include
 LDFLAGS		= -L$(shell brew --prefix readline)/lib/ -lreadline #-LLeakSanitizer  -llsan -lc++  
 
 LIBFT_NAME	= libft.a

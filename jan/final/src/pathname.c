@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/23 15:08:26 by jharrach          #+#    #+#             */
-/*   Updated: 2023/03/03 18:32:50 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/08 19:18:02 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ char	*search_pathname(char *name, char **env)
 	char	*pathname;
 
 	paths = get_paths(env);
-	if (paths)
+	if (paths && name[0])
 	{
 		while (*paths)
 		{

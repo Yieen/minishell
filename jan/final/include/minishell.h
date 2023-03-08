@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 18:29:06 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 19:41:31 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,6 +160,7 @@ void	work_with_dollar( t_shell *shell);
 
 char	**remove_empty_var(t_shell *shell);
 char	*b_get_pwd(void);
+void	free_lexer(t_shell *shell);
 
 //	quot_connect.c
 void	del_n_last(char *str, int del);
