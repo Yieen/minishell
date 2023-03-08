@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:37:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 19:14:00 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 19:42:17 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	dlr_mlc(t_shell *shell)
 
 void	first_part_wwd(t_dolar	*wwd, int i)
 {
-	wwd->save_pos = malloc(sizeof(int) * (ft_strlen(wwd->tlr[i]) + 1));
+	wwd->save_pos = malloc(sizeof(int) * (ft_strlen(wwd->tlr[i]) + 1 + 1024));
 	wwd->s_p_cnt = 0;
 	wwd->d_pos = char_srch(wwd->tlr[i], '$');
 }
@@ -74,7 +74,7 @@ void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
 		ft_strlen(wwd->rs_st) + ft_strlen(wwd->start) + 1);
 	free(wwd->start);
 	free(wwd->tlr[i]);
-	wwd->tlr[i] = malloc(sizeof(char) * dlr_mlc(shell));
+	wwd->tlr[i] = malloc(sizeof(char) * dlr_mlc(shell) + 1024);
 	ft_strlcpy(wwd->tlr[i], wwd->rs_st, ft_strlen(wwd->rs_st) + 1);
 	wwd->d_pos = char_srch(wwd->rs_st, '$');
 }
@@ -85,7 +85,7 @@ void	work_with_dollar( t_shell *shell)
 
 	wwd.i = 0;
 	wwd.tlr = shell->lexer_res;
-	wwd.rs_st = malloc(sizeof(char) * dlr_mlc(shell));
+	wwd.rs_st = malloc(sizeof(char) * dlr_mlc(shell) + 1024);
 	while (wwd.tlr[wwd.i])
 	{
 		if ((wwd.tlr[wwd.i][0] == '\'') && (++wwd.i))
