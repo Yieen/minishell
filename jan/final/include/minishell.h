@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 18:06:47 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 18:29:06 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,16 @@
 # define PROMPT			"minishell$ "
 # define PROG_NAME		"minishell"
 # define PWD_BUF_SIZE	1024
+
+
+typedef struct Catstr
+{
+	int		i;
+	int		j;
+	int		*save_pos;
+	int		s_p_cnt;
+	char	**interim;	
+}	t_combstr;
 
 typedef struct PostParser
 {
