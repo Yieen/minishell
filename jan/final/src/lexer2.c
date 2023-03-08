@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:40:21 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 19:14:09 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 21:06:14 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,13 @@ int	start_new_lexem(t_lexer	*lxr)
 	return (res);
 }
 
-void into_end_lex(t_lexer *lxr, int *res)
+void	into_end_lex(t_lexer *lxr, int *res)
 {
 	char	*str;
 	int		cnt;
 
 	str = lxr->command;
-	cnt = lxr->s_cnt;	
+	cnt = lxr->s_cnt;
 	if (str[cnt] == '\'')
 	{
 		if ((str[cnt + 1] != 0) && (str[cnt + 1] == ' '))
@@ -58,7 +58,7 @@ void into_end_lex(t_lexer *lxr, int *res)
 int	inc_s_cnt(t_lexer *lxr)
 {
 	lxr->s_cnt--;
-	return (1);	
+	return (1);
 }
 
 int	end_lexem(t_lexer *lxr)
@@ -83,7 +83,7 @@ int	end_lexem(t_lexer *lxr)
 			return (1);
 		}
 		if ((lxr->dub_qut == 0) && (str[cnt] == '\"'))
-			return (inc_s_cnt(lxr));		
+			return (inc_s_cnt(lxr));
 		into_end_lex(lxr, &res);
 	}
 	return (res);

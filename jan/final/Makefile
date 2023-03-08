@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+         #
+#    By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/07 22:00:28 by jharrach          #+#    #+#              #
-#    Updated: 2023/03/08 19:44:35 by jharrach         ###   ########.fr        #
+#    Updated: 2023/03/08 20:18:19 by inovomli         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@
 
 NAME		= minishell
 
-SRC_NAME	= main pipes execute pathname parser_and_add wrk_w_envp builtins lexer lexer2 work_with_dollar quot_connect
+SRC_NAME	= main pipes execute pathname parser_and_add wrk_w_envp builtins lexer lexer2 work_with_dollar quot_connect auxilar
 
 SRC_DIR		= src/
 OBJ_DIR		= obj/

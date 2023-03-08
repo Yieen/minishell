@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 19:41:31 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/08 20:37:44 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,13 @@ void	remove_quotes(t_shell *shell);
 void	combine_str(char ***prr);
 void	combine_str2(char ***prr);
 
+// auxilar.c
+int		create_env(t_shell *new_shell, char **envp);
+void	remove_spaces(t_shell *shell);
+int		process_running(t_shell *shell_p);
+void	sig_handler(int sig);
+char	**remove_empty_var(t_shell *shell);
+
 #endif
 
 // void	checkleaks(void)
@@ -182,3 +189,9 @@ void	combine_str2(char ***prr);
 	// if value != 0 => // add value to res
 	// add end str to res
 	// shell->lexer_res[i] = rs_st;
+
+	// cd new_shell/jan/new_begining/
+//	new_begining % gcc -lreadline  *.c
+//	new_begining % gcc -I/goinfre/inovomli/.brew/opt/readline/include -lreadline  *.c
+
+// gcc -lreadline  *.c -LLeakSanitizer -llsan -lc++   -Wno-gnu-include-next -I LeakSanitizer/include
