@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jan-arvid <jan-arvid@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 21:32:13 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 22:46:49 by jan-arvid        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,10 @@ void	close_env(t_shell *shell)
 		i++;
 	}
 	free(shell->auxilar);
+	if (shell->prompt)
+		free(shell->prompt);
+	tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
+	*shell = (t_shell){0};
 }
 
 void	add_free(t_shell *shell)
@@ -80,10 +84,12 @@ void	infinity(t_shell *shell)
 		{
 			ft_clear(shell->env_param);
 			tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
+			ft_putstr_fd("exit\n", STDERR_FILENO);
 			exit(EXIT_SUCCESS);
 		}
 		if (shell->prompt[0] != '\0')
 			return ;
+		free(shell->prompt);
 	}
 }
 
@@ -149,5 +155,6 @@ int	main(int argc, char **argv, char **envp)
 	signal(SIGINT, sig_handler);
 	signal(SIGQUIT, sig_handler);
 	run_shell(&shell);
+	printf("main exit\n");
 	close_env(&shell);
 }

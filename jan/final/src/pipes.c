@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jan-arvid <jan-arvid@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 14:01:51 by jharrach          #+#    #+#             */
-/*   Updated: 2023/03/08 16:22:13 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/08 22:08:00 by jan-arvid        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ static void	pipex_fatal_error(t_shell *shell, int fd[2][2], int i, int ft)
 	pipex_close_fds(shell, fd, i);
 	while (i--)
 		kill(shell->auxilar[i]->pr_id, SIGKILL);
-	//free_minishell;
+	close_env(shell);
 	exit(EXIT_FAILURE);
 }
 

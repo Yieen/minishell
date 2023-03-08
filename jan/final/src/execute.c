@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jan-arvid <jan-arvid@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/22 14:16:18 by jharrach          #+#    #+#             */
-/*   Updated: 2023/03/08 19:43:34 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/08 22:09:33 by jan-arvid        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,11 @@ static int	b_cd_set_pwd(t_shell *shell)
 		var = ft_strjoin("OLDPWD=", old_pwd);
 	if (export(shell, var))
 	{
+		free(var);
 		perror(PROG_NAME ": cd: error: export()");
 		return (EXIT_FAILURE);
 	}
+	free(var);
 	pwd = b_get_pwd();
 	if (!pwd)
 	{
@@ -112,9 +114,11 @@ static int	b_cd_set_pwd(t_shell *shell)
 	}
 	if (export(shell, var))
 	{
+		free(var);
 		perror(PROG_NAME ": cd: error: export()");
 		return (EXIT_FAILURE);
 	}
+	free(var);
 	return (EXIT_SUCCESS);
 }
 
@@ -137,26 +141,6 @@ int	b_cd(t_shell *shell, int i)
 	return (b_cd_set_pwd(shell));
 }
 
-void	free_minishell(t_shell *shell)
-{
-	int i = 0;
-
-	free_lexer(shell);
-	while (i < shell->pipe_cnts + 2)
-	{	
-		free(shell->parser_res[i]);
-		i++;
-	}
-	free(shell->parser_res);
-	i = 0;
-	while (shell->auxilar[i])
-	{
-		free(shell->auxilar[i]);
-		i++;
-	}
-	free(shell->auxilar);
-}
-
 static int	b_exit_check_argument(t_shell *shell, int i)
 {
 	long	status;
@@ -167,7 +151,7 @@ static int	b_exit_check_argument(t_shell *shell, int i)
 		ft_putstr_fd(PROG_NAME ": exit: ", STDERR_FILENO);
 		ft_putstr_fd(shell->parser_res[i][1], STDERR_FILENO);
 		ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
-		free_minishell(shell);
+		close_env(shell);
 		exit(-1);
 	}
 	return (status);
@@ -187,7 +171,7 @@ int	b_exit(t_shell *shell, int i)
 		ft_putstr_fd(PROG_NAME ": exit: too many arguments\n", STDERR_FILENO);
 		return (EXIT_FAILURE);
 	}
-	free_minishell(shell);
+	close_env(shell);
 	exit(status);
 	return (0);
 }
@@ -213,7 +197,7 @@ static void	buildin_error(t_shell *shell, int fd1, int fd2, int dup_num)
 		close(fd1);
 	if (fd2 != -1)
 		close(fd2);
-	free_minishell(shell);
+	close_env(shell);
 	exit(EXIT_FAILURE);
 }
 
@@ -303,7 +287,7 @@ void	execute(t_shell *shell)
 		if (pid == -1)
 		{
 			perror(PROG_NAME ": error: fork()");
-			free_minishell(shell);
+			close_env(shell);
 			exit(EXIT_FAILURE);
 		}
 		else if (pid == 0)

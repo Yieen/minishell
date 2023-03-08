@@ -6,7 +6,7 @@
 /*   By: jan-arvid <jan-arvid@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 21:47:04 by jan-arvid        ###   ########.fr       */
+/*   Updated: 2023/03/08 22:06:15 by jan-arvid        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ void	work_with_dollar( t_shell *shell);
 char	**remove_empty_var(t_shell *shell);
 char	*b_get_pwd(void);
 void	free_lexer(t_shell *shell);
-void	free_minishell(t_shell *shell);
+void	close_env(t_shell *shell);
 
 //	quot_connect.c
 void	del_n_last(char *str, int del);
