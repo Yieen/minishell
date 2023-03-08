@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/07 19:56:14 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 18:06:47 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,9 @@ typedef struct Dollar
 	char	*start;
 	int		*save_pos;
 	int		s_p_cnt;
-	char	**tlr;	
+	char	**tlr;
+	int		i;
+	int		j;	
 }	t_dolar;
 
 typedef struct pipex
