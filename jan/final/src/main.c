@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 21:12:41 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/08 21:32:13 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,61 +71,63 @@ void	add_free(t_shell *shell)
 	free(shell->prompt);
 }
 
+void	infinity(t_shell *shell)
+{
+	while (1)
+	{
+		shell->prompt = readline(PROMPT);
+		if (!shell->prompt)
+		{
+			ft_clear(shell->env_param);
+			tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
+			exit(EXIT_SUCCESS);
+		}
+		if (shell->prompt[0] != '\0')
+			return ;
+	}
+}
+
+void	runsh_part(t_shell *shell)
+{
+	parser(shell);
+	combine_str(shell->parser_res);
+	combine_str2(shell->parser_res);
+	remove_spaces(shell);
+	remove_quotes(shell);
+	shell->auxilar = malloc(sizeof(t_pipex *) * (shell->pipe_cnts + 2));
+	post_parser(shell);
+	tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
+	shell->cont_wrk = 0;
+	if (shell->pipe_cnts > 0)
+		pipex(shell);
+	else
+		execute(shell);
+	add_free(shell);
+}
+
 void	run_shell(t_shell *shell)
 {
 	struct termios	term;
+	int				lx_res;
 
-	tcgetattr(STDIN_FILENO, &shell->term);
-	term = shell->term;
-	term.c_lflag &= ~(ECHOCTL);
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
-	process_running(shell);
-	signal(SIGINT, sig_handler);
-	signal(SIGQUIT, sig_handler);
 	while (1)
 	{
-		while (1)
-		{
-			shell->prompt = readline(PROMPT);
-			if (!shell->prompt)
-			{
-				ft_clear(shell->env_param);
-				tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
-				exit(EXIT_SUCCESS);
-			}
-			if (shell->prompt[0] != '\0')
-				break ;
-		}
-		add_history(shell->prompt);
-		if (lexer(shell))
-		{
-			free_lexer(shell);
-			if (lexer(shell) == 1)
-			{
-				printf("wrong input\n");
-				free_lexer(shell);
-			}
-			free(shell->prompt);
-			continue ;
-		}	
-		parser(shell);
-		combine_str(shell->parser_res);
-		combine_str2(shell->parser_res);
-		remove_spaces(shell);
-		remove_quotes(shell);
-		shell->auxilar = malloc(sizeof(t_pipex *) * (shell->pipe_cnts + 2));
-		post_parser(shell);
-		tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
-		shell->cont_wrk = 0;
-		if (shell->pipe_cnts > 0)
-			pipex(shell);
-		else
-			execute(shell);
-		add_free(shell);
 		tcgetattr(STDIN_FILENO, &shell->term);
 		term = shell->term;
 		term.c_lflag &= ~(ECHOCTL);
 		tcsetattr(STDIN_FILENO, TCSANOW, &term);
+		infinity(shell);
+		add_history(shell->prompt);
+		lx_res = lexer(shell);
+		if (lx_res == 1)
+			printf("wrong input\n");
+		if (lx_res)
+		{
+			free_lexer(shell);
+			free(shell->prompt);
+			continue ;
+		}
+		runsh_part(shell);
 		shell->cont_wrk = 1;
 	}
 }
@@ -143,6 +145,9 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	create_env(&shell, envp);
+	process_running(&shell);
+	signal(SIGINT, sig_handler);
+	signal(SIGQUIT, sig_handler);
 	run_shell(&shell);
 	close_env(&shell);
 }
