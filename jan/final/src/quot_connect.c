@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 19:31:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/09 12:43:10 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/09 15:53:10 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void	into_cmb_str2(char ***prr, t_combstr *sc, int len)
 
 	i = sc->i;
 	j = sc->j;
-	if ((prr[i][j] != 0) && (len >= 0) && (j > 0)
+	if ((prr[i][j] != 0) && (len > 0) && (j > 0)
 		&& ((prr[i][j - 1][0] != '<') && (prr[i][j - 1][0] != '>'))
 		&& ((prr[i][j - 1][len] == '\"') || (prr[i][j - 1][len] == '\'')))
 	{
