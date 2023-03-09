@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jan-arvid <jan-arvid@student.42.fr>        +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 22:06:15 by jan-arvid        ###   ########.fr       */
+/*   Updated: 2023/03/09 01:12:37 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
 # define PROMPT			"minishell$ "
 # define PROG_NAME		"minishell"
 # define PWD_BUF_SIZE	1024
-
 
 typedef struct Catstr
 {
@@ -79,7 +78,6 @@ typedef struct Lexer
 	int		arr_lf_cnt;
 	int		sng_qut;
 	int		dub_qut;
-	int		dollar;
 	char	*command;
 }	t_lexer;
 
@@ -110,7 +108,7 @@ char	**copy_string_array(char **src, int size);
 // builtins
 void	unset(t_shell *shell, char *new_str);
 int		export(t_shell *shell, char *new_str);
-void	add_export(t_shell *shell, char *new_str);
+// void	add_export(t_shell *shell, char *new_str);
 void	env(t_shell *shell);
 void	ft_clear(char	**lsttclear);
 
@@ -119,9 +117,6 @@ void	locate_parser_mem(t_shell *shell);
 void	parser(t_shell *shell);
 void	post_parser(t_shell *shell);
 char	**del_elms_fr_array(char **src, int size, int *del_arr, int s_p_cnt);
-
-// main
-int		is_sp_sim(char ch);
 
 void	pipex(t_shell *shell);
 void	execute(t_shell *shell);
@@ -141,22 +136,21 @@ int		b_unset(t_shell *shell, int i);
 
 // lexer
 int		work_pipe_or_ec(t_shell *shell, t_lexer	*lxr);
-int		is_space(char ch);
 int		is_sp_sim(char ch);
-int		find_end_key(char *str, int st);
+// int		find_end_key(char *str, int st);
 
 // lexer2
-int		start_new_lexem(t_lexer	*lxr);
-int		end_lexem(t_lexer	*lxr);
-int		check_two_pipes(t_shell *shell);
-void	init_lexer(t_shell *shell, t_lexer	*lexer_st);
+// int		start_new_lexem(t_lexer	*lxr);
+// int		end_lexem(t_lexer	*lxr);
+// int		check_two_pipes(t_shell *shell);
+int		lexer_end(t_shell *shell, t_lexer *lr);
 int		lexer(t_shell *shell);
 
 // work with dollar
-void	first_part_wwd(t_dolar	*wwd, int i);
-void	second_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
-int		dlr_mlc(t_shell *shell);
-void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
+// void	first_part_wwd(t_dolar	*wwd, int i);
+// void	second_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
+// int		dlr_mlc(t_shell *shell);
+// void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
 void	work_with_dollar( t_shell *shell);
 
 char	**remove_empty_var(t_shell *shell);
@@ -177,23 +171,7 @@ int		process_running(t_shell *shell_p);
 void	sig_handler(int sig);
 char	**remove_empty_var(t_shell *shell);
 
+void	add_free(t_shell *shell);
+void	pipex_child(t_shell *shell, int fd[2][2], int i);
+
 #endif
-
-// void	checkleaks(void)
-// {
-// 	system("leaks a.out");
-// }
-
-	// save begining of str into res
-	// find end $
-	// cut substr key = ft_substr(shell->lexer_res[i], $next, ($end - $next))	
-	// value = env_get_value(shell->env_param, "a")
-	// if value != 0 => // add value to res
-	// add end str to res
-	// shell->lexer_res[i] = rs_st;
-
-	// cd new_shell/jan/new_begining/
-//	new_begining % gcc -lreadline  *.c
-//	new_begining % gcc -I/goinfre/inovomli/.brew/opt/readline/include -lreadline  *.c
-
-// gcc -lreadline  *.c -LLeakSanitizer -llsan -lc++   -Wno-gnu-include-next -I LeakSanitizer/include

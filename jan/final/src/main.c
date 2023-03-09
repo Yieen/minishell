@@ -3,77 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jan-arvid <jan-arvid@student.42.fr>        +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 22:46:49 by jan-arvid        ###   ########.fr       */
+/*   Updated: 2023/03/09 00:03:30 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-void	free_lexer(t_shell *shell)
-{
-	int	i;
-
-	i = 0;
-	while (shell->lexer_res[i])
-	{
-		if (!((shell->lexer_res[i][0] == '|') || (shell->lexer_res[i][0] == '>')
-			|| (shell->lexer_res[i][0] == '<')))
-			free(shell->lexer_res[i]);
-		i++;
-	}
-	free(shell->lexer_res);
-}
-
-void	close_env(t_shell *shell)
-{
-	int	i;
-
-	free_lexer(shell);
-	ft_clear(shell->env_param);
-	i = 0;
-	while (i < shell->pipe_cnts + 2)
-	{
-		free(shell->parser_res[i]);
-		i++;
-	}
-	free(shell->parser_res);
-	i = 0;
-	while (shell->auxilar[i])
-	{
-		free(shell->auxilar[i]);
-		i++;
-	}
-	free(shell->auxilar);
-	if (shell->prompt)
-		free(shell->prompt);
-	tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
-	*shell = (t_shell){0};
-}
-
-void	add_free(t_shell *shell)
-{
-	int	i;
-
-	i = 0;
-	free_lexer(shell);
-	while (i < shell->pipe_cnts + 2)
-	{	
-		free(shell->parser_res[i]);
-		i++;
-	}
-	free(shell->parser_res);
-	i = 0;
-	while (shell->auxilar[i])
-	{
-		free(shell->auxilar[i]);
-		i++;
-	}
-	free(shell->auxilar);
-	free(shell->prompt);
-}
 
 void	infinity(t_shell *shell)
 {
@@ -138,16 +75,16 @@ void	run_shell(t_shell *shell)
 	}
 }
 
-void	leaks(void)
-{
-	system("leaks minishell");
-}
+// void	leaks(void)
+// {
+// 	system("leaks minishell");
+// }
+// atexit(leaks);
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
 
-	// atexit(leaks);
 	(void)argc;
 	(void)argv;
 	create_env(&shell, envp);

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   work_with_dollar.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:37:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 19:42:17 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/09 01:12:19 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int	dlr_mlc(t_shell *shell)
+static int	dlr_mlc(t_shell *shell)
 {
 	int	res;
 	int	i;
@@ -28,14 +28,21 @@ int	dlr_mlc(t_shell *shell)
 	return (res);
 }
 
-void	first_part_wwd(t_dolar	*wwd, int i)
+static int	find_end_key(char *str, int st)
 {
-	wwd->save_pos = malloc(sizeof(int) * (ft_strlen(wwd->tlr[i]) + 1 + 1024));
-	wwd->s_p_cnt = 0;
-	wwd->d_pos = char_srch(wwd->tlr[i], '$');
+	while (str[st])
+	{
+		if (str[st] == '?')
+			return (st);
+		if (is_sp_sim(str[st]) || (str[st] == '$')
+			|| (str[st] == '\"') || (str[st] == '\''))
+			return (st - 1);
+		st++;
+	}
+	return (st - 1);
 }
 
-void	second_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
+static void	second_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
 {
 	wwd->start = ft_substr(wwd->tlr[i], 0, wwd->d_pos);
 	ft_strlcpy(wwd->rs_st, wwd->start, ft_strlen(wwd->start) + 1);
@@ -56,7 +63,7 @@ void	second_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
 	free(wwd->key);
 }
 
-void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
+static void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
 {
 	if ((wwd->value != 0) && (wwd->value[0] != '\0'))
 	{
@@ -90,7 +97,9 @@ void	work_with_dollar( t_shell *shell)
 	{
 		if ((wwd.tlr[wwd.i][0] == '\'') && (++wwd.i))
 			continue ;
-		first_part_wwd(&wwd, wwd.i);
+		wwd.save_pos = malloc(sizeof(int) * (ft_strlen(wwd.tlr[wwd.i]) + 1025));
+		wwd.s_p_cnt = 0;
+		wwd.d_pos = char_srch(wwd.tlr[wwd.i], '$');
 		while (wwd.d_pos != -1)
 		{
 			second_part_wwd(&wwd, wwd.i, shell);

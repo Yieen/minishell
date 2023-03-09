@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   lexer2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:40:21 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 21:06:14 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/09 01:03:55 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int	start_new_lexem(t_lexer	*lxr)
+static int	start_new_lexem(t_lexer	*lxr)
 {
 	char	*str;
 	int		cnt;
@@ -33,7 +33,7 @@ int	start_new_lexem(t_lexer	*lxr)
 	return (res);
 }
 
-void	into_end_lex(t_lexer *lxr, int *res)
+static void	into_end_lex(t_lexer *lxr, int *res)
 {
 	char	*str;
 	int		cnt;
@@ -55,20 +55,12 @@ void	into_end_lex(t_lexer *lxr, int *res)
 	*res = 1;
 }
 
-int	inc_s_cnt(t_lexer *lxr)
+static int	end_lexem(t_lexer *lxr)
 {
-	lxr->s_cnt--;
-	return (1);
-}
+	char *const	str = lxr->command;
+	int const	cnt = lxr->s_cnt;
+	int			res;
 
-int	end_lexem(t_lexer *lxr)
-{
-	char	*str;
-	int		cnt;
-	int		res;
-
-	str = lxr->command;
-	cnt = lxr->s_cnt;
 	res = 0;
 	if ((lxr->st_nlm >= 0) && (is_sp_sim(str[cnt])
 			|| (str[cnt] == '\'') || (str[cnt] == '\"')))
@@ -83,65 +75,29 @@ int	end_lexem(t_lexer *lxr)
 			return (1);
 		}
 		if ((lxr->dub_qut == 0) && (str[cnt] == '\"'))
-			return (inc_s_cnt(lxr));
+		{
+			lxr->s_cnt--;
+			return (1);
+		}
 		into_end_lex(lxr, &res);
 	}
 	return (res);
 }
 
-int	check_two_pipes(t_shell *shell)
+int	is_sp_sim(char ch)
 {
-	int		i;
-	char	**tlr;
+	const char	*special_simbols = "|>< \t\n";
+	int			cnt;
 
-	i = 0;
-	tlr = shell->lexer_res;
-	while (tlr[i])
+	cnt = 0;
+	while (special_simbols[cnt])
 	{
-		if ((tlr[0][0] == '|' || tlr[0][0] == '>' || tlr[0][0] == '<')
-			&& tdar_str_calc(tlr) == 1)
+		if (ch == special_simbols[cnt])
 			return (1);
-		if (tlr[i + 1] != 0)
-		{
-			if ((tlr[i][0] == '|') && (tlr[i + 1][0] == '|'))
-				return (1);
-			if ((tlr[i][0] == '>' || tlr[i][0] == '<') && tlr[i + 1][0] == '|')
-				return (1);
-			if (((tlr[i][0] == '>') && (tlr[i + 1][0] == '<'))
-				|| ((tlr[i][0] == '<') && (tlr[i + 1][0] == '>')))
-				return (1);
-		}
-		else if (tlr[i][0] == '>' || tlr[i][0] == '<' || tlr[i][0] == '|')
-			return (1);
-		i++;
+		else
+			cnt++;
 	}
-	return (0);
-}
-
-void	init_lexer(t_shell *shell, t_lexer	*lexer_st)
-{
-	lexer_st->s_cnt = 0;
-	lexer_st->l_cnt = 0;
-	lexer_st->st_nlm = -1;
-	lexer_st->sng_qut = 0;
-	lexer_st->dub_qut = 0;
-	lexer_st->command = shell->prompt;
-	lexer_st->pipe_cnt = 0;
-	lexer_st->arr_cnt = 0;
-	lexer_st->arr_lf_cnt = 0;
-}
-
-int	lexer_end(t_shell *shell, t_lexer *lr)
-{
-	shell->lexer_res[lr->l_cnt] = 0;
-	shell->pipe_cnts = lr->pipe_cnt;
-	shell->arr_cnts = lr->arr_cnt;
-	shell->arr_lf_cnts = lr->arr_lf_cnt;
-	if (shell->env_param != 0)
-		work_with_dollar(shell);
-	if (lr->l_cnt == 0)
-		return (2);
-	if (check_two_pipes(shell))
+	if (ch == '\0')
 		return (1);
 	return (0);
 }
@@ -151,8 +107,10 @@ int	lexer(t_shell *shell)
 	t_lexer	lr;
 
 	shell->lexer_res = malloc(sizeof(char *) * (ft_strlen(shell->prompt) + 1));
-	init_lexer(shell, &lr);
-	while (is_space(shell->prompt[lr.s_cnt]))
+	lr = (t_lexer){0};
+	lr.command = shell->prompt;
+	lr.st_nlm = -1;
+	while (ft_isspace(shell->prompt[lr.s_cnt]))
 		lr.s_cnt++;
 	while (lr.s_cnt <= (int)ft_strlen(shell->prompt))
 	{

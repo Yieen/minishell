@@ -6,39 +6,11 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/20 16:07:06 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 19:44:22 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/09 00:03:48 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-void	unset(t_shell *shell, char *new_str)
-{
-	int		pos;
-	int		envp_size;
-	char	**new_env;	
-
-	pos = pos_into_env(shell->env_param, new_str);
-	if (pos != -1)
-	{
-		envp_size = tdar_str_calc(shell->env_param);
-		new_env = del_ind_fr_array(shell->env_param, envp_size + 1, pos);
-		free(shell->env_param[pos]);
-		free(shell->env_param);
-		shell->env_param = new_env;
-		shell->env_param[envp_size + 1] = 0;
-	}
-}
-
-int	b_unset(t_shell *shell, int i)
-{
-	int	j;
-
-	j = 1;
-	while (shell->parser_res[i][j])
-		unset(shell, shell->parser_res[i][j++]);
-	return (EXIT_SUCCESS);
-}
 
 void	ft_clear(char	**lsttclear)
 {
@@ -53,93 +25,65 @@ void	ft_clear(char	**lsttclear)
 	free(lsttclear);
 }
 
-void	add_export(t_shell *shell, char *new_str)
-{
-	int		envp_size;
-	char	**new_env;
-
-	envp_size = tdar_str_calc(shell->env_param);
-	new_env = copy_string_array(shell->env_param, envp_size + 2);
-	ft_clear(shell->env_param);
-	shell->env_param = new_env;
-	shell->env_param[envp_size] = malloc(sizeof(char)
-			* (ft_strlen(new_str) + 1));
-	ft_strlcpy(shell->env_param[envp_size], new_str, ft_strlen(new_str) + 1);
-	shell->env_param[envp_size + 1] = 0;
-}
-
-int	check_key(char *str, int eq_pos)
+void	free_lexer(t_shell *shell)
 {
 	int	i;
 
 	i = 0;
-	if (!(((str[0] >= 'a') && (str[0] <= 'z'))
-			|| ((str[0] >= 'A') && (str[0] <= 'Z'))))
-		return (0);
-	while (i < eq_pos)
+	while (shell->lexer_res[i])
 	{
-		if ((str[i] >= 'a' && str[i] <= 'z') || (str[i] >= 'A' && str[i] <= 'Z')
-			|| (str[i] >= '0' && str[i] <= '9'))
-			i++;
-		else
-			return (0);
+		if (!((shell->lexer_res[i][0] == '|') || (shell->lexer_res[i][0] == '>')
+			|| (shell->lexer_res[i][0] == '<')))
+			free(shell->lexer_res[i]);
+		i++;
 	}
-	return (1);
+	free(shell->lexer_res);
 }
 
-void	export_env(t_shell *shell)
+void	close_env(t_shell *shell)
 {
 	int	i;
 
-	i = -1;
-	while (shell->env_param[++i])
+	free_lexer(shell);
+	ft_clear(shell->env_param);
+	i = 0;
+	while (i < shell->pipe_cnts + 2)
 	{
-		printf("declare -x %s\n", shell->env_param[i]);
-	}	
-}
-
-int	norm_add(void)
-{
-	printf("wrong input\n");
-	return (EXIT_FAILURE);	
-}
-
-int	export(t_shell *shell, char *new_str)
-{
-	int		env_ind;
-	char	*temp;
-
-	if ((new_str == 0) || (new_str[0] == '\0'))
-	{
-		export_env(shell);
-		return (EXIT_SUCCESS);
+		free(shell->parser_res[i]);
+		i++;
 	}
-	if (!check_key(new_str, char_srch(new_str, '=')))
-		return (norm_add());
-	temp = cut_equ(new_str);
-	env_ind = pos_into_env(shell->env_param, temp);
-	if (env_ind == -1)
-		add_export(shell, new_str);
-	else if (char_srch(new_str, '=') != -1)	
+	free(shell->parser_res);
+	i = 0;
+	while (shell->auxilar[i])
 	{
-		free(shell->env_param[env_ind]);
-		shell->env_param[env_ind] = malloc(sizeof(char)
-				* (ft_strlen(new_str) + 1));
-		ft_strlcpy(shell->env_param[env_ind], new_str, ft_strlen(new_str) + 1);
+		free(shell->auxilar[i]);
+		i++;
 	}
-	free(temp);
-	return (EXIT_SUCCESS);
+	free(shell->auxilar);
+	if (shell->prompt)
+		free(shell->prompt);
+	tcsetattr(STDIN_FILENO, TCSANOW, &shell->term);
+	*shell = (t_shell){0};
 }
 
-int	b_export(t_shell *shell, int i)
+void	add_free(t_shell *shell)
 {
-	int	ret;
-	int	j;
+	int	i;
 
-	if (!shell->parser_res[i][1])
-		return (export(shell, shell->parser_res[i][1]));
-	j = 1;
-	while (shell->parser_res[i][j])
-		ret = export(shell, shell->parser_res[i][j++]);
-	return (ret);
+	i = 0;
+	free_lexer(shell);
+	while (i < shell->pipe_cnts + 2)
+	{	
+		free(shell->parser_res[i]);
+		i++;
+	}
+	free(shell->parser_res);
+	i = 0;
+	while (shell->auxilar[i])
+	{
+		free(shell->auxilar[i]);
+		i++;
+	}
+	free(shell->auxilar);
+	free(shell->prompt);
 }

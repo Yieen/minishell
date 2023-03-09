@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+         #
+#    By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/07 22:00:28 by jharrach          #+#    #+#              #
-#    Updated: 2023/03/08 20:18:19 by inovomli         ###   ########.fr        #
+#    Updated: 2023/03/09 01:06:26 by jharrach         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,12 +18,15 @@
 
 NAME		= minishell
 
-SRC_NAME	= main pipes execute pathname parser_and_add wrk_w_envp builtins lexer lexer2 work_with_dollar quot_connect auxilar
+SRC_NAME	= main pipe1 pipe2 execute pathname parser_and_add wrk_w_envp builtins lexer1 lexer2 work_with_dollar quot_connect auxilar
+SRC_BUILTIN	= b_cd b_echo b_env b_exit b_export b_pwd b_unset
 
 SRC_DIR		= src/
 OBJ_DIR		= obj/
+BUILTIN_DIR	= builtin/
 
 OBJ			+= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_NAME)))
+OBJ			+= $(addprefix $(OBJ_DIR), $(addprefix $(BUILTIN_DIR), $(addsuffix .o, $(SRC_BUILTIN))))
 
 CFLAGS		= -Wall -Wextra -Werror -I$(shell brew --prefix readline)/include  -fsanitize=address -fsanitize=undefined #-Wno-gnu-include-next -I LeakSanitizer/include
 LDFLAGS		= -L$(shell brew --prefix readline)/lib/ -lreadline #-LLeakSanitizer  -llsan -lc++  
@@ -44,6 +47,7 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.c | objdir
 
 objdir:
 	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(OBJ_DIR)$(BUILTIN_DIR)
 
 clean:
 	@$(MAKE) clean -C $(LIBFT_DIR) | sed -e 's/^/libft-> /;'

@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.c                                            :+:      :+:    :+:   */
+/*   lexer1.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:16:00 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/06 17:39:44 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/09 01:05:23 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	wrk_pipeor_sh(t_shell *shell, t_lexer	*lxr, char *str, int cnt)
+static void	wrk_pipeor_sh(t_shell *shell, t_lexer	*lxr, char *str, int cnt)
 {
 	if (str[cnt] == '>')
 	{
@@ -65,42 +65,46 @@ int	work_pipe_or_ec(t_shell *shell, t_lexer	*lxr)
 	return (0);
 }
 
-int	is_space(char ch)
+static int	check_two_pipes(t_shell *shell)
 {
-	if ((ch == ' ') || (ch == '\t') || (ch == '\n'))
-		return (1);
-	else
-		return (0);
-}
+	int		i;
+	char	**tlr;
 
-int	is_sp_sim(char ch)
-{
-	const char	*special_simbols = "|>< \t\n";
-	int			cnt;
-
-	cnt = 0;
-	while (special_simbols[cnt])
+	i = 0;
+	tlr = shell->lexer_res;
+	while (tlr[i])
 	{
-		if (ch == special_simbols[cnt])
+		if ((tlr[0][0] == '|' || tlr[0][0] == '>' || tlr[0][0] == '<')
+			&& tdar_str_calc(tlr) == 1)
 			return (1);
-		else
-			cnt++;
+		if (tlr[i + 1] != 0)
+		{
+			if ((tlr[i][0] == '|') && (tlr[i + 1][0] == '|'))
+				return (1);
+			if ((tlr[i][0] == '>' || tlr[i][0] == '<') && tlr[i + 1][0] == '|')
+				return (1);
+			if (((tlr[i][0] == '>') && (tlr[i + 1][0] == '<'))
+				|| ((tlr[i][0] == '<') && (tlr[i + 1][0] == '>')))
+				return (1);
+		}
+		else if (tlr[i][0] == '>' || tlr[i][0] == '<' || tlr[i][0] == '|')
+			return (1);
+		i++;
 	}
-	if (ch == '\0')
-		return (1);
 	return (0);
 }
 
-int	find_end_key(char *str, int st)
+int	lexer_end(t_shell *shell, t_lexer *lr)
 {
-	while (str[st])
-	{
-		if (str[st] == '?')
-			return (st);
-		if (is_sp_sim(str[st]) || (str[st] == '$')
-			|| (str[st] == '\"') || (str[st] == '\''))
-			return (st - 1);
-		st++;
-	}
-	return (st - 1);
+	shell->lexer_res[lr->l_cnt] = 0;
+	shell->pipe_cnts = lr->pipe_cnt;
+	shell->arr_cnts = lr->arr_cnt;
+	shell->arr_lf_cnts = lr->arr_lf_cnt;
+	if (shell->env_param != 0)
+		work_with_dollar(shell);
+	if (lr->l_cnt == 0)
+		return (2);
+	if (check_two_pipes(shell))
+		return (1);
+	return (0);
 }
