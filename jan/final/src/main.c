@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 10:48:31 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/09 00:03:30 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/09 16:05:59 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,12 +75,6 @@ void	run_shell(t_shell *shell)
 	}
 }
 
-// void	leaks(void)
-// {
-// 	system("leaks minishell");
-// }
-// atexit(leaks);
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	shell;
@@ -92,6 +86,4 @@ int	main(int argc, char **argv, char **envp)
 	signal(SIGINT, sig_handler);
 	signal(SIGQUIT, sig_handler);
 	run_shell(&shell);
-	printf("main exit\n");
-	close_env(&shell);
 }

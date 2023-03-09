@@ -6,7 +6,7 @@
 /*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/09 12:49:37 by inovomli         ###   ########.fr       */
+/*   Updated: 2023/03/09 16:06:43 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,6 @@ int		char_srch(char *str, char ch);
 // builtins
 void	unset(t_shell *shell, char *new_str);
 int		export(t_shell *shell, char *new_str);
-// void	add_export(t_shell *shell, char *new_str);
 void	env(t_shell *shell);
 void	ft_clear(char	**lsttclear);
 
@@ -146,20 +145,12 @@ int		b_unset(t_shell *shell, int i);
 // lexer
 int		work_pipe_or_ec(t_shell *shell, t_lexer	*lxr);
 int		is_sp_sim(char ch);
-// int		find_end_key(char *str, int st);
 
 // lexer2
-// int		start_new_lexem(t_lexer	*lxr);
-// int		end_lexem(t_lexer	*lxr);
-// int		check_two_pipes(t_shell *shell);
 int		lexer_end(t_shell *shell, t_lexer *lr);
 int		lexer(t_shell *shell);
 
 // work with dollar
-// void	first_part_wwd(t_dolar	*wwd, int i);
-// void	second_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
-// int		dlr_mlc(t_shell *shell);
-// void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell);
 void	work_with_dollar( t_shell *shell);
 
 char	**remove_empty_var(t_shell *shell);

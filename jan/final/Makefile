@@ -6,7 +6,7 @@
 #    By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/07 22:00:28 by jharrach          #+#    #+#              #
-#    Updated: 2023/03/09 12:46:32 by inovomli         ###   ########.fr        #
+#    Updated: 2023/03/09 16:08:26 by inovomli         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,8 +29,8 @@ BUILTIN_DIR	= builtin/
 OBJ			+= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_NAME)))
 OBJ			+= $(addprefix $(OBJ_DIR), $(addprefix $(BUILTIN_DIR), $(addsuffix .o, $(SRC_BUILTIN))))
 
-CFLAGS		= -Wall -Wextra -Werror -I$(shell brew --prefix readline)/include  -fsanitize=address -fsanitize=undefined #-Wno-gnu-include-next -I LeakSanitizer/include
-LDFLAGS		= -L$(shell brew --prefix readline)/lib/ -lreadline #-LLeakSanitizer  -llsan -lc++  
+CFLAGS		= -Wall -Wextra -Werror -I$(shell brew --prefix readline)/include 
+LDFLAGS		= -L$(shell brew --prefix readline)/lib/ -lreadlin 
 
 LIBFT_NAME	= libft.a
 LIBFT_DIR	= libft/
