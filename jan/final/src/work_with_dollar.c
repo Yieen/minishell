@@ -6,7 +6,7 @@
 /*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/03 11:37:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/09 01:12:19 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/09 14:56:03 by jharrach         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,9 @@ static void	third_part_wwd(t_dolar	*wwd, int i, t_shell *shell)
 	{
 		ft_strlcat(wwd->rs_st, wwd->value,
 			ft_strlen(wwd->rs_st) + ft_strlen(wwd->value) + 1);
-		free(wwd->value);
 	}
+	if (wwd->value)
+		free(wwd->value);
 	if (wwd->end_key == wwd->d_pos)
 		wwd->start = ft_substr(wwd->tlr[i], wwd->end_key,
 				ft_strlen(wwd->tlr[i]) - wwd->end_key);
