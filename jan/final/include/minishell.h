@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 14:57:33 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/09 01:12:37 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/09 12:49:37 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,6 @@ int		pos_into_env(char **envp, char *srch_str);
 int		tdar_str_calc(char **arr);
 char	*cut_equ(char *wrk_str);
 int		char_srch(char *str, char ch);
-char	**del_ind_fr_array(char **src, int size, int del_i);
-char	**copy_string_array(char **src, int size);
 
 // builtins
 void	unset(t_shell *shell, char *new_str);
@@ -115,8 +113,19 @@ void	ft_clear(char	**lsttclear);
 // parser and add
 void	locate_parser_mem(t_shell *shell);
 void	parser(t_shell *shell);
-void	post_parser(t_shell *shell);
+int		here_doc(char *delimiter);
 char	**del_elms_fr_array(char **src, int size, int *del_arr, int s_p_cnt);
+void	one_left_arrow(t_shell *shell, t_parser *pp, int i, int j);
+// parser2
+void	two_left_arrow(t_shell *shell, t_parser *pp, int i, int j);
+void	left_arrow_pp(t_shell *shell, t_parser *pp, int i, int j);
+void	one_right_arrow(t_shell *shell, t_parser *pp, int i, int j);
+void	two_right_arrow(t_shell *shell, t_parser *pp, int i, int j);
+void	right_arrow_pp(t_shell *shell, t_parser *pp, int i, int j);
+// parser3
+void	init_auxilar(t_shell *shell, int i);
+void	init_post_parser_st(t_shell *shell, t_parser *pp);
+void	post_parser(t_shell *shell);
 
 void	pipex(t_shell *shell);
 void	execute(t_shell *shell);
@@ -159,10 +168,16 @@ void	free_lexer(t_shell *shell);
 void	close_env(t_shell *shell);
 
 //	quot_connect.c
-void	del_n_last(char *str, int del);
 void	remove_quotes(t_shell *shell);
+void	into_cmb_st(char ***prr, t_combstr *cs);
 void	combine_str(char ***prr);
+void	into_cmb_str2(char ***prr, t_combstr *sc, int len);
 void	combine_str2(char ***prr);
+
+// wwenv_qutcon.c
+void	del_n_last(char *str, int del);
+char	**del_ind_fr_array(char **src, int size, int del_i);
+char	**copy_string_array(char **src, int size);
 
 // auxilar.c
 int		create_env(t_shell *new_shell, char **envp);

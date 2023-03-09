@@ -3,29 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   quot_connect.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jharrach <jharrach@student.42.fr>          +#+  +:+       +#+        */
+/*   By: inovomli <inovomli@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/07 19:31:07 by inovomli          #+#    #+#             */
-/*   Updated: 2023/03/08 19:40:02 by jharrach         ###   ########.fr       */
+/*   Updated: 2023/03/09 12:43:10 by inovomli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-void	del_n_last(char *str, int del)
-{
-	int	len;
-	int	i;
-
-	i = del;
-	len = ft_strlen(str);
-	while (i < len - 2)
-	{
-		str[i] = str[i + 1];
-		i++;
-	}
-	str[i] = 0;
-}
 
 void	remove_quotes(t_shell *shell)
 {
@@ -58,7 +43,8 @@ void	remove_quotes(t_shell *shell)
 
 void	into_cmb_st(char ***prr, t_combstr *cs)
 {
-	if ((prr[cs->i][cs->j + 1] != 0) && ((prr[cs->i][cs->j + 1][0] == '\"')
+	if ((prr[cs->i][cs->j + 1] != 0) && (ft_strlen(prr[cs->i][cs->j]) >= 1)
+		&& ((prr[cs->i][cs->j + 1][0] == '\"')
 		|| (prr[cs->i][cs->j + 1][0] == '\''))
 		&& (prr[cs->i][cs->j][ft_strlen(prr[cs->i][cs->j]) - 1] != ' ')
 		&& (prr[cs->i][cs->j][0] != '<') && (prr[cs->i][cs->j][0] != '>')
@@ -111,7 +97,7 @@ void	into_cmb_str2(char ***prr, t_combstr *sc, int len)
 
 	i = sc->i;
 	j = sc->j;
-	if ((prr[i][j] != 0) && (len >= 0)
+	if ((prr[i][j] != 0) && (len >= 0) && (j > 0)
 		&& ((prr[i][j - 1][0] != '<') && (prr[i][j - 1][0] != '>'))
 		&& ((prr[i][j - 1][len] == '\"') || (prr[i][j - 1][len] == '\'')))
 	{
